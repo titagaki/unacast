@@ -639,7 +639,7 @@ else {
             app.exit();
         });
         // 開発者ツールを開く
-        // mainWin.webContents.openDevTools();
+        mainWin.webContents.openDevTools();
         // タスクトレイの設定
         var tray = null;
         app.whenReady().then(function () {
@@ -1869,11 +1869,10 @@ var startYoutubeChat = function () { return __awaiter(void 0, void 0, void 0, fu
  * サーバー停止
  */
 electron_1.ipcMain.on(const_1.electronEvent['stop-server'], function (event) {
-    console.log('[startServer]server stop');
+    console.log('[startServer] server stop');
     server.close();
     aWss.close();
     app = null;
-    event.returnValue = 'stop';
     // キュー処理停止
     isExecuteQue = false;
     globalThis.electron.commentQueueList = [];

@@ -16,7 +16,7 @@ const main = {
   module: {
     rules: [
       {
-        test: /.ts?$/,
+        test: /.tsx?$/,
         include: [path.resolve(__dirname, 'src')],
         exclude: [path.resolve(__dirname, 'node_modules')],
         loader: 'ts-loader',
@@ -24,7 +24,7 @@ const main = {
     ],
   },
   resolve: {
-    extensions: ['.js', '.ts'],
+    extensions: ['.js', '.ts', '.tsx'],
   },
   devtool: 'cheap-source-map',
   externals: [nodeExternals()],
@@ -34,7 +34,7 @@ const renderer = {
   mode: 'development',
   target: 'electron-renderer',
   entry: {
-    index: './src/renderer/renderer',
+    index: './src/renderer/entry/renderer',
     chat: './src/renderer/chat',
   },
   output: {

@@ -134,7 +134,7 @@ if (!app.requestSingleInstanceLock()) {
     });
 
     // 開発者ツールを開く
-    // mainWin.webContents.openDevTools();
+    mainWin.webContents.openDevTools();
 
     // タスクトレイの設定
     let tray = null;

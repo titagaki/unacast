@@ -330,11 +330,10 @@ const startYoutubeChat = async () => {
  * サーバー停止
  */
 ipcMain.on(electronEvent['stop-server'], (event) => {
-  console.log('[startServer]server stop');
+  console.log('[startServer] server stop');
   server.close();
   aWss.close();
   app = null as any;
-  event.returnValue = 'stop';
 
   // キュー処理停止
   isExecuteQue = false;

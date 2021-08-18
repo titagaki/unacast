@@ -1,411 +1,418 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>unacast</title>
-    <!-- CSSの読み込み Material Design Lite -->
-    <link rel="stylesheet" href="../../node_modules/material-design-lite/material.min.css" />
-    <script src="../../node_modules/material-design-lite/material.min.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
-    <!-- CSSの読み込み 自作CSS -->
-    <link rel="stylesheet" href="../../public/css/style.css" />
-  </head>
-  <body>
-    <div class="maincontaints">
-      <form id="form-main">
-        <ul id="comments"></ul>
 
-        <div>サーバー起動、適用ボタンクリックで設定が反映されます。</div>
-        <div>
-          <button type="button" id="button-config-apply" class="mdl-button mdl-js-button mdl-button--raised">
-            適用
-          </button>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>unacast</title>
+  <!-- CSSの読み込み Material Design Lite -->
+  <link rel="stylesheet" href="../../node_modules/material-design-lite/material.min.css" />
+  <script src="../../node_modules/material-design-lite/material.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+  <!-- CSSの読み込み 自作CSS -->
+  <link rel="stylesheet" href="../../public/css/style.css" />
+</head>
 
-          <button type="button" id="button-server-start" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
-            サーバー起動
-          </button>
+<body>
+  <div class="maincontaints">
+    <form id="form-main">
+      <ul id="comments"></ul>
 
-          <button type="button" disabled="true" id="button-server-stop" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
-            停止
-          </button>
+      <div>サーバー起動、適用ボタンクリックで設定が反映されます。</div>
+      <div>
+        <button type="button" id="button-config-apply" class="mdl-button mdl-js-button mdl-button--raised">
+          適用
+        </button>
 
-        </div>
+        <button type="button" id="button-server-start" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+          サーバー起動
+        </button>
 
-        <!-- 確認ダイアログ -->
-        <dialog id="close-dialog" class="mdl-dialog">
-          <div class="mdl-dialog__content">
-            <p>
-              サーバーを停止しますか
-            </p>
-          </div>
-          <div class="mdl-dialog__actions">
-            <button type="button" id="button-close-dialog-cancel" class="mdl-button close">キャンセル</button>
-            <button type="button" id="button-close-dialog-ok" class="mdl-button mdl-button--raised mdl-button--colored">OK</button>
-          </div>
-        </dialog>
-        <!-- /確認ダイアログ -->
+        <button type="button" disabled="true" id="button-server-stop" class="mdl-button mdl-js-button mdl-button--raised mdl-button--colored">
+          停止
+        </button>
 
-        <!-- アラートダイアログ -->
-        <dialog id="alert-dialog" class="mdl-dialog">
-          <div class="mdl-dialog__content">  </div>
-          <div class="mdl-dialog__actions">
-            <button type="button" id="button-alert-dialog-ok" class="mdl-button mdl-button--raised mdl-button--colored">OK</button>
-          </div>
-        </dialog>
-        <!-- /アラートダイアログ -->
+      </div>
 
-        <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
-          <div class="subtitle">ポート番号</div>
-          <div id="port-number-area">
-            <div class="labeledInputArea">
-              <span>http://localhost:</span>
-              <input id="text-port-number" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]{0,4}?" value="3000" />
-            </div>
-            <span class="mdl-textfield__error">0-9999 までの数値を入れてください</span>
-          </div>
-          <div>
-            <span id="server-full-url"></span>
-          </div>
-        </div>
-
-        <div class="block">
-          <h5>レス・コメント取得先</h5>
-          <div>
-            <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
-              <div class="subtitle">掲示板URL</div>
-              <div class="caption">サーバ起動中に変更した場合は、最新の1レスがコメント欄に表示されます。</div>
-              <div>
-                <span class="status" id="bbs-title"></span>
-              </div>
-              <input id="text-url" class="mdl-textfield__input" type="text" pattern="http.?://.+/$" value="" />
-              <span id="text-url-error" class="mdl-textfield__error">URLを入力してください</span>
-            </div>
-            <div class="bbsStatusArea">
-                <span class="status"><span class="status-label">status:</span><span id="bbs-connection-status">none</span></span>
-            </div>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
-            <div class="subtitle">Jpnkn Fastインターフェース(β)</div>
-            <div class="labeledInputArea">
-              <span>http://bbs.jpnkn.com/</span>
-              <input class="mdl-textfield__input" type="text" id="text-jpnknFast-id" pattern="^(?!.*http.?:)(?!.*/.*).*$" />
-              /beta/fast
-            </div>
-            <div class="jpnknFastStatusArea">
-              <span class="status"><span class="status-label">status:</span><span id="jpnknFast-connection-status">none</span></span>
-            </div>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
-            <div class="subtitle">Youtube</div>
-            <div class="caption">両方入力した場合はLiveIDが優先されます</div>
-            <div class="subtitle" style="font-size: small;">LiveID</div>
-            <div class="labeledInputArea">
-              <span>https://www.youtube.com/watch?v=</span>
-              <input class="mdl-textfield__input" type="text" id="text-youtube-liveid" pattern="^(?!.*http.?:)(?!.*/.*).*$" />
-            </div>
-            <div class="subtitle" style="font-size: small;">チャンネルID</div>
-            <div class="labeledInputArea">
-              <span>https://www.youtube.com/channel/</span>
-              <input class="mdl-textfield__input" type="text" id="text-youtube-id" pattern="^(?!.*http.?:)(?!.*/.*).*$" />
-              /
-            </div>
-            <div class="youtubeStatusArea">
-              <span class="status"><span class="status-label">status:</span><span id="youtube-connection-status">none</span></span>
-              <span class="status"><span class="status-label">liveId:</span><span id="youtube-live-id">none</span></span>
-            </div>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
-            <div class="subtitle">Twitch ユーザID</div>
-            <div class="labeledInputArea">
-              <span>https://www.twitch.tv/</span>
-              <input class="mdl-textfield__input" type="text" id="text-twitch-id" pattern="^(?!.*http.?:)(?!.*/.*).*$" />
-              /
-            </div>
-          </div>
-          <div class="twitchStatusArea">
-            <span class="status"><span class="status-label">status:</span><span id="twitch-connection-status">none</span></span>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
-            <div class="subtitle">ニコニココミュニティID</div>
-            <div class="labeledInputArea">
-              <span>https://com.nicovideo.jp/community/</span>
-              <input class="mdl-textfield__input" type="text" id="text-niconico-id" pattern="^co(?!.*http.?:)(?!.*/.*).*$" />
-              /
-            </div>
-          </div>
-          <div class="niconicoStatusArea">
-            <span class="status"><span class="status-label">status:</span><span id="niconico-connection-status">none</span></span>
-          </div>
-        </div>
-
-        <div class="block">
-          <h5>掲示板取得設定</h5>
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
-            <div class="subtitle">開始レス番号</div>
-            <div class="caption">サーバ起動後、ブラウザからの初回アクセス時に表示するレスの開始番号です。省略した場合は表示しません。</div>
-            <input id="text-res-number" class="mdl-textfield__input" type="text" pattern="[0-9]{0,3}?" value="" />
-            <span class="mdl-textfield__error">0-999 までの数値を入れてください</span>
-          </div>
-
-          <p>更新間隔 <span id="spanDisp">10</span>秒</p>
-          <p style="width: 80%;">
-            <input id="rangeSpan" class="mdl-slider mdl-js-slider" type="range" min="5" max="30" value="10" tabindex="0" oninput="showVal('spanDisp', this.value)" />
+      <!-- 確認ダイアログ -->
+      <dialog id="close-dialog" class="mdl-dialog">
+        <div class="mdl-dialog__content">
+          <p>
+            サーバーを停止しますか
           </p>
         </div>
-
-        <div class="block">
-          <h5>表示設定</h5>
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
-            <div class="subtitle">表示タイプ</div>
-            <label class="mdl-radio mdl-js-radio" for="dispType_0">
-              <input id="dispType_0" class="mdl-radio__button" type="radio" name="dispType" value="0"/>
-              <span class="mdl-radio__label">チャット風</span>
-            </label>
-
-            <label class="mdl-radio mdl-js-radio" for="dispType_1">
-              <input id="dispType_1" class="mdl-radio__button" type="radio" name="dispType" value="1" />
-              <span class="mdl-radio__label">SpeechCast風</span>
-            </label>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
-            <div class="subtitle">初期表示テキスト</div>
-            <div class="caption">SpeechCast風表示ではレスが無い時の字幕になります。</div>
-            <input id="text-init-message" class="mdl-textfield__input" type="text" value="" />
-          </div>
-
-          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-showIcon">
-            <input type="checkbox" id="checkbox-showIcon" class="mdl-checkbox__input" value="1" checked />
-            <span class="mdl-checkbox__label">アイコン表示</span>
-          </label>
-
-          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-showNumber">
-            <input type="checkbox" id="checkbox-showNumber" class="mdl-checkbox__input" value="1" checked />
-            <span class="mdl-checkbox__label">レス番表示(掲示板レスのみ有効)</span>
-          </label>
-
-          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-showName">
-            <input type="checkbox" id="checkbox-showName" class="mdl-checkbox__input" value="1" checked />
-            <span class="mdl-checkbox__label">名前表示</span>
-          </label>
-
-          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-showTime">
-            <input type="checkbox" id="checkbox-showTime" class="mdl-checkbox__input" value="1" checked />
-            <span class="mdl-checkbox__label">時刻表示(掲示板レスのみ有効)</span>
-          </label>
-
-          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-wordBreak">
-            <input type="checkbox" id="checkbox-wordBreak" class="mdl-checkbox__input" value="1" checked />
-            <span class="mdl-checkbox__label">横幅超過時に自動改行する</span>
-          </label>
-
-          <div class="mdl-textfield mdl-js-textfield">
-            <div class="subtitle">レス表示順序</div>
-            <label class="mdl-radio mdl-js-radio" for="newResUp">
-              <input id="newResUp" class="mdl-radio__button" type="radio" name="dispSort" />
-              <span class="mdl-radio__label">新着が上</span>
-            </label>
-
-            <label class="mdl-radio mdl-js-radio" for="newResDown">
-              <input id="newResDown" class="mdl-radio__button" type="radio" name="dispSort" />
-              <span class="mdl-radio__label">新着が下</span>
-            </label>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield">
-            <div class="subtitle">名前と本文を改行で分ける</div>
-            <label class="mdl-radio mdl-js-radio" for="disableNewLine">
-              <input id="disableNewLine" class="mdl-radio__button" type="radio" name="newLine" />
-              <span class="mdl-radio__label">分けない</span>
-            </label>
-            <label class="mdl-radio mdl-js-radio" for="enableNewLine">
-              <input id="enableNewLine" class="mdl-radio__button" type="radio" name="newLine" />
-              <span class="mdl-radio__label">分ける</span>
-            </label>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
-            <div class="subtitle">画像URLのサムネイル表示</div>
-            <label class="mdl-radio mdl-js-radio" for="thumbnail_0">
-              <input id="thumbnail_0" class="mdl-radio__button" type="radio" name="thumbnail" value="0" />
-              <span class="mdl-radio__label">非表示</span>
-            </label>
-            <label class="mdl-radio mdl-js-radio" for="thumbnail_1">
-              <input id="thumbnail_1" class="mdl-radio__button" type="radio" name="thumbnail" value="1" />
-              <span class="mdl-radio__label">チャット欄に表示</span>
-            </label>
-            <label class="mdl-radio mdl-js-radio" for="thumbnail_2">
-              <input id="thumbnail_2" class="mdl-radio__button" type="radio" name="thumbnail" value="2" />
-              <span class="mdl-radio__label">チャット欄＋サーバに表示</span>
-            </label>
-          </div>
-
+        <div class="mdl-dialog__actions">
+          <button type="button" id="button-close-dialog-cancel" class="mdl-button close">キャンセル</button>
+          <button type="button" id="button-close-dialog-ok" class="mdl-button mdl-button--raised mdl-button--colored">OK</button>
         </div>
+      </dialog>
+      <!-- /確認ダイアログ -->
 
-        <div class="block">
-          <h5>レス・コメント着信音設定</h5>
-          <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
-            <div class="subtitle">着信音のフォルダパス</div>
-            <div class="caption">.wavファイルが含まれたフォルダを入力してください。</div>
-            <input class="mdl-textfield__input" type="text" id="text-se-path" placeholder="C:\hogehoge\fugafuga" />
+      <!-- アラートダイアログ -->
+      <dialog id="alert-dialog" class="mdl-dialog">
+        <div class="mdl-dialog__content"> </div>
+        <div class="mdl-dialog__actions">
+          <button type="button" id="button-alert-dialog-ok" class="mdl-button mdl-button--raised mdl-button--colored">OK</button>
+        </div>
+      </dialog>
+      <!-- /アラートダイアログ -->
 
-            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-playSe">
-              <input type="checkbox" id="checkbox-playSe" class="mdl-checkbox__input" value="1" checked />
-              <span class="mdl-checkbox__label">着信音再生を有効にする</span>
-            </label>
+      <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
+        <div class="subtitle">ポート番号</div>
+        <div id="port-number-area">
+          <div class="labeledInputArea">
+            <span>http://localhost:</span>
+            <input id="text-port-number" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]{0,4}?" value="3000" />
+          </div>
+          <span class="mdl-textfield__error">0-9999 までの数値を入れてください</span>
+        </div>
+        <div>
+          <span id="server-full-url"></span>
+        </div>
+      </div>
 
+      <div class="block">
+        <h5>レス・コメント取得先</h5>
+        <div>
+          <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
+            <div class="subtitle">掲示板URL</div>
+            <div class="caption">サーバ起動中に変更した場合は、最新の1レスがコメント欄に表示されます。</div>
             <div>
-              <span class="subtitle">音量</span> <span id="disp-playSe-volume">100</span></p>
-              <p style="width: 80%;">
-                <input id="playSe-volume" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="100" tabindex="0" oninput="showVal('disp-playSe-volume', this.value)" />
-              </p>
+              <span class="status" id="bbs-title"></span>
             </div>
+            <input id="text-url" class="mdl-textfield__input" type="text" pattern="http.?://.+/$" value="" />
+            <span id="text-url-error" class="mdl-textfield__error">URLを入力してください</span>
+          </div>
+          <div class="bbsStatusArea">
+            <span class="status"><span class="status-label">status:</span><span id="bbs-connection-status">none</span></span>
           </div>
         </div>
 
-        <div class="block">
-          <h5>読み子設定</h5>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100vw;">
-            <div class="subtitle">読み子の種類</div>
-            <label class="mdl-radio mdl-js-radio" for="yomiko_none">
-              <input id="yomiko_none" class="mdl-radio__button" type="radio" name="typeYomiko" value="none" />
-              <span class="mdl-radio__label">使用しない</span>
-            </label>
-
-            <label class="mdl-radio mdl-js-radio" for="yomiko_tamiyasu">
-              <input id="yomiko_tamiyasu" class="mdl-radio__button" type="radio" name="typeYomiko" value="tamiyasu" />
-              <span class="mdl-radio__label">民安☆Talk</span>
-            </label>
-
-            <label class="mdl-radio mdl-js-radio" for="yomiko_bouyomi">
-              <input id="yomiko_bouyomi" class="mdl-radio__button" type="radio" name="typeYomiko" value="bouyomi" />
-              <span class="mdl-radio__label">棒読みちゃん</span>
-            </label>
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
+          <div class="subtitle">Jpnkn Fastインターフェース(β)</div>
+          <div class="labeledInputArea">
+            <span>http://bbs.jpnkn.com/</span>
+            <input class="mdl-textfield__input" type="text" id="text-jpnknFast-id" pattern="^(?!.*http.?:)(?!.*/.*).*$" />
+            /beta/fast
           </div>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
-            <div class="subtitle">民安☆Talkのファイルパス</div>
-            <input class="mdl-textfield__input" type="text" id="text-tamiyasu-path"  placeholder="C:\hogehoge\fugafuga\vrx.exe" />
+          <div class="jpnknFastStatusArea">
+            <span class="status"><span class="status-label">status:</span><span id="jpnknFast-connection-status">none</span></span>
           </div>
+        </div>
 
-          <h5>棒読みちゃん設定</h5>
-          <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
-            <div class="subtitle">待ち受けポート</div>
-            <input class="mdl-textfield__input" type="text" id="text-bouyomi-port" />
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
+          <div class="subtitle">Youtube</div>
+          <div class="caption">両方入力した場合はLiveIDが優先されます</div>
+          <div class="subtitle" style="font-size: small;">LiveID</div>
+          <div class="labeledInputArea">
+            <span>https://www.youtube.com/watch?v=</span>
+            <input class="mdl-textfield__input" type="text" id="text-youtube-liveid" pattern="^(?!.*http.?:)(?!.*/.*).*$" />
           </div>
+          <div class="subtitle" style="font-size: small;">チャンネルID</div>
+          <div class="labeledInputArea">
+            <span>https://www.youtube.com/channel/</span>
+            <input class="mdl-textfield__input" type="text" id="text-youtube-id" pattern="^(?!.*http.?:)(?!.*/.*).*$" />
+            /
+          </div>
+          <div class="youtubeStatusArea">
+            <span class="status"><span class="status-label">status:</span><span id="youtube-connection-status">none</span></span>
+            <span class="status"><span class="status-label">liveId:</span><span id="youtube-live-id">none</span></span>
+          </div>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
+          <div class="subtitle">Twitch ユーザID</div>
+          <div class="labeledInputArea">
+            <span>https://www.twitch.tv/</span>
+            <input class="mdl-textfield__input" type="text" id="text-twitch-id" pattern="^(?!.*http.?:)(?!.*/.*).*$" />
+            /
+          </div>
+        </div>
+        <div class="twitchStatusArea">
+          <span class="status"><span class="status-label">status:</span><span id="twitch-connection-status">none</span></span>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
+          <div class="subtitle">ニコニココミュニティID</div>
+          <div class="labeledInputArea">
+            <span>https://com.nicovideo.jp/community/</span>
+            <input class="mdl-textfield__input" type="text" id="text-niconico-id" pattern="^co(?!.*http.?:)(?!.*/.*).*$" />
+            /
+          </div>
+        </div>
+        <div class="niconicoStatusArea">
+          <span class="status"><span class="status-label">status:</span><span id="niconico-connection-status">none</span></span>
+        </div>
+      </div>
+
+      <div class="block">
+        <h5>掲示板取得設定</h5>
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
+          <div class="subtitle">開始レス番号</div>
+          <div class="caption">サーバ起動後、ブラウザからの初回アクセス時に表示するレスの開始番号です。省略した場合は表示しません。</div>
+          <input id="text-res-number" class="mdl-textfield__input" type="text" pattern="[0-9]{0,3}?" value="" />
+          <span class="mdl-textfield__error">0-999 までの数値を入れてください</span>
+        </div>
+
+        <p>更新間隔 <span id="spanDisp">10</span>秒</p>
+        <p style="width: 80%;">
+          <input id="rangeSpan" class="mdl-slider mdl-js-slider" type="range" min="5" max="30" value="10" tabindex="0" oninput="showVal('spanDisp', this.value)" />
+        </p>
+      </div>
+
+      <div class="block">
+        <h5>表示設定</h5>
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
+          <div class="subtitle">表示タイプ</div>
+          <label class="mdl-radio mdl-js-radio" for="dispType_0">
+            <input id="dispType_0" class="mdl-radio__button" type="radio" name="dispType" value="0" />
+            <span class="mdl-radio__label">チャット風</span>
+          </label>
+
+          <label class="mdl-radio mdl-js-radio" for="dispType_1">
+            <input id="dispType_1" class="mdl-radio__button" type="radio" name="dispType" value="1" />
+            <span class="mdl-radio__label">SpeechCast風</span>
+          </label>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
+          <div class="subtitle">初期表示テキスト</div>
+          <div class="caption">SpeechCast風表示ではレスが無い時の字幕になります。</div>
+          <input id="text-init-message" class="mdl-textfield__input" type="text" value="" />
+        </div>
+
+        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-showIcon">
+          <input type="checkbox" id="checkbox-showIcon" class="mdl-checkbox__input" value="1" checked />
+          <span class="mdl-checkbox__label">アイコン表示</span>
+        </label>
+
+        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-showNumber">
+          <input type="checkbox" id="checkbox-showNumber" class="mdl-checkbox__input" value="1" checked />
+          <span class="mdl-checkbox__label">レス番表示(掲示板レスのみ有効)</span>
+        </label>
+
+        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-showName">
+          <input type="checkbox" id="checkbox-showName" class="mdl-checkbox__input" value="1" checked />
+          <span class="mdl-checkbox__label">名前表示</span>
+        </label>
+
+        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-showTime">
+          <input type="checkbox" id="checkbox-showTime" class="mdl-checkbox__input" value="1" checked />
+          <span class="mdl-checkbox__label">時刻表示(掲示板レスのみ有効)</span>
+        </label>
+
+        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-wordBreak">
+          <input type="checkbox" id="checkbox-wordBreak" class="mdl-checkbox__input" value="1" checked />
+          <span class="mdl-checkbox__label">横幅超過時に自動改行する</span>
+        </label>
+
+        <div class="mdl-textfield mdl-js-textfield">
+          <div class="subtitle">レス表示順序</div>
+          <label class="mdl-radio mdl-js-radio" for="newResUp">
+            <input id="newResUp" class="mdl-radio__button" type="radio" name="dispSort" />
+            <span class="mdl-radio__label">新着が上</span>
+          </label>
+
+          <label class="mdl-radio mdl-js-radio" for="newResDown">
+            <input id="newResDown" class="mdl-radio__button" type="radio" name="dispSort" />
+            <span class="mdl-radio__label">新着が下</span>
+          </label>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield">
+          <div class="subtitle">名前と本文を改行で分ける</div>
+          <label class="mdl-radio mdl-js-radio" for="disableNewLine">
+            <input id="disableNewLine" class="mdl-radio__button" type="radio" name="newLine" />
+            <span class="mdl-radio__label">分けない</span>
+          </label>
+          <label class="mdl-radio mdl-js-radio" for="enableNewLine">
+            <input id="enableNewLine" class="mdl-radio__button" type="radio" name="newLine" />
+            <span class="mdl-radio__label">分ける</span>
+          </label>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
+          <div class="subtitle">画像URLのサムネイル表示</div>
+          <label class="mdl-radio mdl-js-radio" for="thumbnail_0">
+            <input id="thumbnail_0" class="mdl-radio__button" type="radio" name="thumbnail" value="0" />
+            <span class="mdl-radio__label">非表示</span>
+          </label>
+          <label class="mdl-radio mdl-js-radio" for="thumbnail_1">
+            <input id="thumbnail_1" class="mdl-radio__button" type="radio" name="thumbnail" value="1" />
+            <span class="mdl-radio__label">チャット欄に表示</span>
+          </label>
+          <label class="mdl-radio mdl-js-radio" for="thumbnail_2">
+            <input id="thumbnail_2" class="mdl-radio__button" type="radio" name="thumbnail" value="2" />
+            <span class="mdl-radio__label">チャット欄＋サーバに表示</span>
+          </label>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
+          <div class="subtitle">レス表示秒数(SpeechCast風のみ)</div>
+          <input id="min-display-time" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]+(\.[0-9])?" value="2.5" />
+          <span class="mdl-textfield__error">X.Y秒で入力してください</span>
+        </div>
+      </div>
+
+      <div class="block">
+        <h5>レス・コメント着信音設定</h5>
+        <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
+          <div class="subtitle">着信音のフォルダパス</div>
+          <div class="caption">.wavファイルが含まれたフォルダを入力してください。</div>
+          <input class="mdl-textfield__input" type="text" id="text-se-path" placeholder="C:\hogehoge\fugafuga" />
+
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-playSe">
+            <input type="checkbox" id="checkbox-playSe" class="mdl-checkbox__input" value="1" checked />
+            <span class="mdl-checkbox__label">着信音再生を有効にする</span>
+          </label>
+
           <div>
-            <span class="subtitle">音量</span> <span id="disp-bouyomi-volume">50</span></p>
+            <span class="subtitle">音量</span> <span id="disp-playSe-volume">100</span></p>
             <p style="width: 80%;">
-              <input id="bouyomi-volume" class="mdl-slider mdl-js-slider" type="range" min="-1" max="100" value="50" tabindex="0" oninput="showVal('disp-bouyomi-volume', this.value)" />
+              <input id="playSe-volume" class="mdl-slider mdl-js-slider" type="range" min="0" max="100" value="100" tabindex="0" oninput="showVal('disp-playSe-volume', this.value)" />
             </p>
           </div>
-          <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
-            <div class="subtitle">プレフィックス</div>
-            <div class="caption">読み子に送信するテキストの先頭に固定文字列を追加します。</div>
-            <input class="mdl-textfield__input" type="text" id="text-bouyomi-prefix" />
-          </div>
+        </div>
+      </div>
 
-          <h5>その他の読み子設定</h5>
-          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="yomiko-replace-newline">
-            <input type="checkbox" id="yomiko-replace-newline" class="mdl-checkbox__input" value="0" checked />
-            <span class="mdl-checkbox__label">読み子に渡す時に改行削除</span>
+      <div class="block">
+        <h5>読み子設定</h5>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100vw;">
+          <div class="subtitle">読み子の種類</div>
+          <label class="mdl-radio mdl-js-radio" for="yomiko_none">
+            <input id="yomiko_none" class="mdl-radio__button" type="radio" name="typeYomiko" value="none" />
+            <span class="mdl-radio__label">使用しない</span>
           </label>
 
+          <label class="mdl-radio mdl-js-radio" for="yomiko_tamiyasu">
+            <input id="yomiko_tamiyasu" class="mdl-radio__button" type="radio" name="typeYomiko" value="tamiyasu" />
+            <span class="mdl-radio__label">民安☆Talk</span>
+          </label>
+
+          <label class="mdl-radio mdl-js-radio" for="yomiko_bouyomi">
+            <input id="yomiko_bouyomi" class="mdl-radio__button" type="radio" name="typeYomiko" value="bouyomi" />
+            <span class="mdl-radio__label">棒読みちゃん</span>
+          </label>
         </div>
 
-        <div class="block">
-          <h5>AAモード</h5>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100vw;">
-            <div class="caption">条件に合致するレスを専用のフォントで表示します。</div>
-  
-            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="aamode_enable">
-              <input type="checkbox" id="aamode_enable" class="mdl-checkbox__input" value="0" checked />
-              <span class="mdl-checkbox__label">有効にする</span>
-            </label>
-  
-            <div class="subtitle">判定条件</div>
-            <div class="labeledInputArea">
-              <input id="aamode_condition_length" style="width: 200px;" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]+" value="200" />
-              文字以上、または下記文字列を含む場合
-            </div>
-
-            <div class="labeledInputArea">
-              <textarea id="aamode_condition_words" style="width: 400px;" class="mdl-textfield__input" type="textarea">
-Д
-д
-（●）
-从
-）)ﾉヽ
-∀
-<●>
-（__人__）</textarea>
-            </div>
-          </div>
- 
+        <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
+          <div class="subtitle">民安☆Talkのファイルパス</div>
+          <input class="mdl-textfield__input" type="text" id="text-tamiyasu-path" placeholder="C:\hogehoge\fugafuga\vrx.exe" />
         </div>
 
-        <div class="block">
-          <h5>その他</h5>
-          <div class="mdl-textfield mdl-js-textfield"  style="width: 600px;">
-            <div class="subtitle">スレのレス番号が超えた時に通知する値(0で使用しない)</div>
-            <input id="text-notify-threadResLimit" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]{0,5}?" value="0" />
-            <span class="mdl-textfield__error">0-10000 までの数値を入れてください</span>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield"  style="width: 600px;">
-            <div class="subtitle">掲示板が連続で通信エラーになった時に通知する閾値(0で使用しない)</div>
-            <input id="text-notify-threadConnectionErrorLimit" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]{0,2}?" value="0" />
-            <span class="mdl-textfield__error">0-99 までの数値を入れてください</span>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100vw;">
-            <div class="caption">スレ順に探索して、最初に見つかった1000以外のスレに移動します。移動先の初回取得結果はブラウザ側には表示しません。</div>
-            <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="moveThread">
-              <input type="checkbox" id="moveThread" class="mdl-checkbox__input" value="0" checked />
-              <span class="mdl-checkbox__label">1000で自動スレ移動</span>
-            </label>
-          </div>
-
-          <div class="mdl-textfield mdl-js-textfield" style="width: 100vw;">
-            <div class="subtitle">レスの処理単位</div>
-            <label class="mdl-radio mdl-js-radio" for="commentProcessType_0">
-              <input id="commentProcessType_0" class="mdl-radio__button" type="radio" name="commentProcessType" value="0" />
-              <span class="mdl-radio__label">新着を優先(着信音等が鳴ってる場合は中断されます)</span>
-            </label>
-
-            <label class="mdl-radio mdl-js-radio" for="commentProcessType_1">
-              <input id="commentProcessType_1" class="mdl-radio__button" type="radio" name="commentProcessType" value="1" />
-              <span class="mdl-radio__label">1つずつ</span>
-            </label>
-          </div>
-
+        <h5>棒読みちゃん設定</h5>
+        <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
+          <div class="subtitle">待ち受けポート</div>
+          <input class="mdl-textfield__input" type="text" id="text-bouyomi-port" />
         </div>
-      </form>
+        <div>
+          <span class="subtitle">音量</span> <span id="disp-bouyomi-volume">50</span></p>
+          <p style="width: 80%;">
+            <input id="bouyomi-volume" class="mdl-slider mdl-js-slider" type="range" min="-1" max="100" value="50" tabindex="0" oninput="showVal('disp-bouyomi-volume', this.value)" />
+          </p>
+        </div>
+        <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
+          <div class="subtitle">プレフィックス</div>
+          <div class="caption">読み子に送信するテキストの先頭に固定文字列を追加します。</div>
+          <input class="mdl-textfield__input" type="text" id="text-bouyomi-prefix" />
+        </div>
 
-      <script>
-        require('../../dist/scripts');
-        const { shell } = require('electron');
+        <h5>その他の読み子設定</h5>
+        <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="yomiko-replace-newline">
+          <input type="checkbox" id="yomiko-replace-newline" class="mdl-checkbox__input" value="0" checked />
+          <span class="mdl-checkbox__label">読み子に渡す時に改行削除</span>
+        </label>
 
-        const urlopen = (url) => {
-          let tmp = url;
-          if (url.match(/^ttp/)) {
-            tmp = `h${url}`;
-          }
-          shell.openExternal(tmp);
-        };
+      </div>
 
-        /* 変更中（ドラッグ中） */
-        const showVal = (id, newVal) => {
-          document.getElementById(`${id}`).innerText = newVal;
-        };
-      </script>
-    </div>
-  </body>
+      <div class="block">
+        <h5>AAモード</h5>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100vw;">
+          <div class="caption">条件に合致するレスを専用のフォントで表示します。</div>
+
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="aamode_enable">
+            <input type="checkbox" id="aamode_enable" class="mdl-checkbox__input" value="0" checked />
+            <span class="mdl-checkbox__label">有効にする</span>
+          </label>
+
+          <div class="subtitle">判定条件</div>
+          <div class="labeledInputArea">
+            <input id="aamode_condition_length" style="width: 200px;" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]+" value="200" />
+            文字以上、または下記文字列を含む場合
+          </div>
+
+          <div class="labeledInputArea">
+            <textarea id="aamode_condition_words" style="width: 400px;" class="mdl-textfield__input" type="textarea">
+  Д
+  д
+  （●）
+  从
+  ）)ﾉヽ
+  ∀
+  <●>
+  （__人__）</textarea>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="block">
+        <h5>その他</h5>
+        <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
+          <div class="subtitle">スレのレス番号が超えた時に通知する値(0で使用しない)</div>
+          <input id="text-notify-threadResLimit" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]{0,5}?" value="0" />
+          <span class="mdl-textfield__error">0-10000 までの数値を入れてください</span>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 600px;">
+          <div class="subtitle">掲示板が連続で通信エラーになった時に通知する閾値(0で使用しない)</div>
+          <input id="text-notify-threadConnectionErrorLimit" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]{0,2}?" value="0" />
+          <span class="mdl-textfield__error">0-99 までの数値を入れてください</span>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100vw;">
+          <div class="caption">スレ順に探索して、最初に見つかった1000以外のスレに移動します。移動先の初回取得結果はブラウザ側には表示しません。</div>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="moveThread">
+            <input type="checkbox" id="moveThread" class="mdl-checkbox__input" value="0" checked />
+            <span class="mdl-checkbox__label">1000で自動スレ移動</span>
+          </label>
+        </div>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100vw;">
+          <div class="subtitle">レスの処理単位</div>
+          <label class="mdl-radio mdl-js-radio" for="commentProcessType_0">
+            <input id="commentProcessType_0" class="mdl-radio__button" type="radio" name="commentProcessType" value="0" />
+            <span class="mdl-radio__label">新着を優先(着信音等が鳴ってる場合は中断されます)</span>
+          </label>
+
+          <label class="mdl-radio mdl-js-radio" for="commentProcessType_1">
+            <input id="commentProcessType_1" class="mdl-radio__button" type="radio" name="commentProcessType" value="1" />
+            <span class="mdl-radio__label">1つずつ</span>
+          </label>
+        </div>
+      </div>
+    </form>
+
+    <script>
+      require('../../dist/scripts');
+      const { shell } = require('electron');
+
+      const urlopen = (url) => {
+        let tmp = url;
+        if (url.match(/^ttp/)) {
+          tmp = `h${url}`;
+        }
+        shell.openExternal(tmp);
+      };
+
+      /* 変更中（ドラッグ中） */
+      const showVal = (id, newVal) => {
+        document.getElementById(`${id}`).innerText = newVal;
+      };
+    </script>
+  </div>
+</body>
+
 </html>

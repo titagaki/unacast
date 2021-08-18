@@ -2884,7 +2884,7 @@ exports.createDom = createDom;
  * @param message
  */
 var sendDom = function (messageList) { return __awaiter(void 0, void 0, void 0, function () {
-    var newList, domStr, socketObject_1, text, MIN_DISP_TIME, e_2;
+    var newList, domStr, socketObject_1, text, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -2926,8 +2926,7 @@ var sendDom = function (messageList) { return __awaiter(void 0, void 0, void 0, 
                 _a.label = 6;
             case 6:
                 if (!(globalThis.config.dispType === 1)) return [3 /*break*/, 8];
-                MIN_DISP_TIME = 2.5 * 1000;
-                return [4 /*yield*/, util_1.sleep(MIN_DISP_TIME)];
+                return [4 /*yield*/, util_1.sleep(globalThis.config.minDisplayTime * 1000)];
             case 7:
                 _a.sent();
                 _a.label = 8;

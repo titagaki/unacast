@@ -766,8 +766,7 @@ const sendDom = async (messageList: UserComment[]) => {
 
     // 追加で表示を維持する時間
     if (globalThis.config.dispType === 1) {
-      const MIN_DISP_TIME = 2.5 * 1000;
-      await sleep(MIN_DISP_TIME);
+      await sleep(globalThis.config.minDisplayTime * 1000);
     }
 
     // 鳴らし終わって読み子が終わった

@@ -285,6 +285,20 @@ const buildConfigJson = () => {
   const aamodeConditionWords = (document.getElementById('aamode_condition_words') as HTMLTextAreaElement).value;
   aamode.condition.words = aamodeConditionWords.split(/\r|\r\n|\n/).filter((word) => !!word);
 
+  // 翻訳
+  let translate: typeof globalThis['config']['translate'] = null as any;
+  try {
+    translate = {
+      enable: (document.getElementById('translate_enable') as any).checked === true,
+      targetLang: ((document.getElementById('translate_targetLang') as HTMLSelectElement).value as typeof globalThis['config']['translate']['targetLang']) ?? 'ja',
+    };
+  } catch (e) {
+    translate = {
+      enable: true,
+      targetLang: globalThis.config.translate.targetLang,
+    };
+  }
+
   const config: typeof globalThis['config'] = {
     url: url,
     resNumber,
@@ -321,6 +335,7 @@ const buildConfigJson = () => {
     commentProcessType,
     dispType,
     aamode,
+    translate,
   };
 
   return config;
@@ -381,6 +396,10 @@ const loadConfigToLocalStrage = () => {
         words: ['д', '（●）', '从', '）)ﾉヽ', '∀', '<●>', '（__人__）'],
       },
       speakWord: 'アスキーアート',
+    },
+    translate: {
+      enable: true,
+      targetLang: 'ja',
     },
   };
 
@@ -480,6 +499,10 @@ const loadConfigToLocalStrage = () => {
   (document.getElementById('aamode_condition_words') as HTMLTextAreaElement).value = config.aamode.condition.words.join('\n');
 
   (document.getElementById('min-display-time') as HTMLInputElement).value = config.minDisplayTime.toString();
+
+  // 翻訳
+  (document.getElementById('translate_enable') as any).checked = config.translate.enable;
+  (document.getElementById('translate_targetLang') as HTMLSelectElement).value = config.translate.targetLang;
 
   log.debug('config loaded');
 };

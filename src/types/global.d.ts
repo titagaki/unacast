@@ -60,6 +60,10 @@ declare global {
      */
     let dispSort: boolean;
     /**
+     * レス表示時間(秒)
+     */
+    let minDisplayTime: number;
+    /**
      * 名前と本文を改行で分ける
      * - true: 分ける
      * - false: 分けない
@@ -135,4 +139,4 @@ declare global {
   }
 }
 
-export {};
+export { };

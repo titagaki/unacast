@@ -239,6 +239,8 @@ const buildConfigJson = () => {
   const wordBreak = (document.getElementById('checkbox-wordBreak') as any).checked === true;
   // 表示順序設定
   const dispSort = (document.getElementById('newResUp') as any).checked === false;
+  // 表示秒数設定
+  const minDisplayTime = parseFloat((document.getElementById('min-display-time') as any).value);
   // 本文改行設定
   const newLine = (document.getElementById('enableNewLine') as any).checked === true;
   // SEパス
@@ -310,6 +312,7 @@ const buildConfigJson = () => {
     niconicoId: niconicoUrl,
     jpnknFastBoardId,
     dispSort,
+    minDisplayTime,
     newLine,
     showIcon,
     showNumber,
@@ -364,6 +367,7 @@ const loadConfigToLocalStrage = () => {
     niconicoId: '',
     jpnknFastBoardId: '',
     dispSort: false,
+    minDisplayTime: 2.5,
     newLine: true,
     showIcon: true,
     showNumber: true,
@@ -493,6 +497,8 @@ const loadConfigToLocalStrage = () => {
   (document.getElementById('aamode_enable') as any).checked = config.aamode.enable;
   (document.getElementById('aamode_condition_length') as HTMLInputElement).value = config.aamode.condition.length.toString();
   (document.getElementById('aamode_condition_words') as HTMLTextAreaElement).value = config.aamode.condition.words.join('\n');
+
+  (document.getElementById('min-display-time') as HTMLInputElement).value = config.minDisplayTime.toString();
 
   // 翻訳
   (document.getElementById('translate_enable') as any).checked = config.translate.enable;

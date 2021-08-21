@@ -2275,6 +2275,7 @@ electron_1.ipcMain.on(const_1.electronEvent.START_SERVER, function (event, confi
     var expressInstance, nico, jpn;
     return __generator(this, function (_a) {
         globalThis.electron.chatWindow.webContents.send(const_1.electronEvent.CLEAR_COMMENT);
+        globalThis.electron.translateWindow.webContents.send(const_1.electronEvent.CLEAR_COMMENT);
         globalThis.electron.threadNumber = 0;
         globalThis.electron.commentQueueList = [];
         globalThis.electron.threadConnectionError = 0;
@@ -3086,6 +3087,7 @@ var createTranslateDom = function (message, translated) {
     if (isResNameShowed) {
         domStr += '<br />';
     }
+    electron_log_1.default.info(translated + "   ---  " + message.text);
     domStr += "\n  <div class=\"res\">\n    " + translated + "\n  </div>\n  <hr style=\"margin: 1px;border-top: 1px solid black\" />\n  <span class=\"res-org\">\n    " + message.text + "\n  </span>\n";
     // 〆
     domStr += "</div>\n  </li>";
@@ -3105,16 +3107,16 @@ var sendDomForTranslateWindow = function (message) { return __awaiter(void 0, vo
                 _a.trys.push([1, 3, , 4]);
                 reg = new RegExp("(h?ttps?(://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+))", 'g');
                 orgText = message.text
-                    .replace(/<a .*?>/g, '') // したらばはアンカーをaタグ化している
+                    .replace(/<a .*?>/g, '')
                     .replace(/<\\a>/g, '')
                     .replace(/<img .*?>/g, '')
                     .replace(/<\\img>/g, '')
                     .replace(reg, '')
                     .trim();
-                return [4 /*yield*/, googletrans_1.default(orgText, {
+                return [4 /*yield*/, googletrans_1.default(util_1.unescapeHtml(orgText), {
                         to: globalThis.config.translate.targetLang,
                         from: 'auto',
-                        tld: 'co.jp',
+                        tld: globalThis.config.translate.targetLang === 'ja' ? 'co.jp' : 'com',
                     })];
             case 2:
                 translated = _a.sent();
@@ -3122,7 +3124,7 @@ var sendDomForTranslateWindow = function (message) { return __awaiter(void 0, vo
                 // もし何もテキストとして残らなかったら表示しない
                 if (!translated.text)
                     return [2 /*return*/, ''];
-                domStr = exports.createTranslateDom(__assign(__assign({}, message), { text: orgText }), translated.text);
+                domStr = exports.createTranslateDom(__assign(__assign({}, message), { text: orgText }), util_1.escapeHtml(translated.text));
                 globalThis.electron.translateWindow.webContents.send(const_1.electronEvent.SHOW_COMMENT_TL, { config: globalThis.config, dom: domStr });
                 return [3 /*break*/, 4];
             case 3:
@@ -3211,7 +3213,8 @@ var unescapeHtml = function (str) {
         .replace(/&lt;/g, '<')
         .replace(/&gt;/g, '>')
         .replace(/&quot;/g, '"')
-        .replace(/&#039;/g, "'")
+        .replace(/&#x27;/g, "'")
+        .replace(/&#x60;/g, '`')
         .replace(/&#044;/g, ',')
         .replace(/&amp;/g, '&');
 };

@@ -80,6 +80,7 @@ ipcMain.on(electronEvent.APPLY_CONFIG, async (event: any, config: typeof globalT
  */
 ipcMain.on(electronEvent.START_SERVER, async (event: any, config: typeof globalThis['config']) => {
   globalThis.electron.chatWindow.webContents.send(electronEvent.CLEAR_COMMENT);
+  globalThis.electron.translateWindow.webContents.send(electronEvent.CLEAR_COMMENT);
   globalThis.electron.threadNumber = 0;
   globalThis.electron.commentQueueList = [];
   globalThis.electron.threadConnectionError = 0;
@@ -880,6 +881,8 @@ export const createTranslateDom = (message: UserComment, translated: string) => 
     domStr += '<br />';
   }
 
+  log.info(`${translated}   ---  ${message.text}`);
+
   domStr += `
   <div class="res">
     ${translated}
@@ -905,22 +908,23 @@ const sendDomForTranslateWindow = async (message: UserComment) => {
   try {
     const reg = new RegExp("(h?ttps?(://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+))", 'g');
     const orgText = message.text
-      .replace(/<a .*?>/g, '') // したらばはアンカーをaタグ化している
+      .replace(/<a .*?>/g, '')
       .replace(/<\\a>/g, '')
       .replace(/<img .*?>/g, '')
       .replace(/<\\img>/g, '')
       .replace(reg, '')
       .trim();
-    const translated = await tr(orgText, {
+
+    const translated = await tr(unescapeHtml(orgText), {
       to: globalThis.config.translate.targetLang,
       from: 'auto',
-      tld: 'co.jp',
+      tld: globalThis.config.translate.targetLang === 'ja' ? 'co.jp' : 'com',
     });
     log.info(translated.text);
     // もし何もテキストとして残らなかったら表示しない
     if (!translated.text) return '';
 
-    const domStr = createTranslateDom({ ...message, text: orgText }, translated.text);
+    const domStr = createTranslateDom({ ...message, text: orgText }, escapeHtml(translated.text));
 
     globalThis.electron.translateWindow.webContents.send(electronEvent.SHOW_COMMENT_TL, { config: globalThis.config, dom: domStr });
   } catch (e) {

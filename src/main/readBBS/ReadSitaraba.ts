@@ -2,6 +2,7 @@
  * したらば読み込み用モジュール
  */
 import axios, { AxiosRequestConfig } from 'axios';
+import https from 'https';
 import iconv from 'iconv-lite'; // 文字コード変換用パッケージ
 import electronlog from 'electron-log';
 const log = electronlog.scope('bbs');
@@ -40,7 +41,7 @@ export const readBoard = async (boardUrl: string) => {
         .map((line) => parseThreadList(boardUrl, line)),
     );
   } catch (error) {
-    log.error('[Read5ch.js]5ch系BBS板取得APIリクエストエラー、message=' + error.message);
+    log.error('[Read5ch.js]5ch系BBS板取得APIリクエストエラー、message=' + (error as any).message);
     throw new Error('connection error');
   }
 
@@ -117,6 +118,9 @@ class ReadSitaraba {
       method: 'GET',
       responseType: 'arraybuffer',
       timeout: 3 * 1000,
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false,
+      }),
     };
     try {
       const response = await axios(options);
@@ -127,7 +131,7 @@ class ReadSitaraba {
       return responseJson;
     } catch (e) {
       // 通信エラー
-      throw new Error(`通信エラー: ${requestUrl}`);
+      throw new Error(`通信エラー: ${requestUrl} stack=${e}`);
     }
   };
 }

@@ -1897,6 +1897,7 @@ exports.postRes = exports.readBoard = void 0;
  * したらば読み込み用モジュール
  */
 var axios_1 = __importDefault(__webpack_require__(/*! axios */ "axios"));
+var https_1 = __importDefault(__webpack_require__(/*! https */ "https"));
 var iconv_lite_1 = __importDefault(__webpack_require__(/*! iconv-lite */ "iconv-lite")); // 文字コード変換用パッケージ
 var electron_log_1 = __importDefault(__webpack_require__(/*! electron-log */ "electron-log"));
 var log = electron_log_1.default.scope('bbs');
@@ -2006,6 +2007,9 @@ var ReadSitaraba = /** @class */ (function () {
                             method: 'GET',
                             responseType: 'arraybuffer',
                             timeout: 3 * 1000,
+                            httpsAgent: new https_1.default.Agent({
+                                rejectUnauthorized: false,
+                            }),
                         };
                         _a.label = 1;
                     case 1:
@@ -2019,7 +2023,7 @@ var ReadSitaraba = /** @class */ (function () {
                     case 3:
                         e_1 = _a.sent();
                         // 通信エラー
-                        throw new Error("\u901A\u4FE1\u30A8\u30E9\u30FC: " + requestUrl);
+                        throw new Error("\u901A\u4FE1\u30A8\u30E9\u30FC: " + requestUrl + " stack=" + e_1);
                     case 4: return [2 /*return*/];
                 }
             });

@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', () => {
     (document.getElementById('port-number-area') as HTMLInputElement).style.display = 'none';
 
     // サーバー開始メッセージを送信する
-    const result = ipcRenderer.sendSync('start-server', config);
+    const result = ipcRenderer.sendSync(electronEvent.START_SERVER, config);
     log.debug(` ${result}`);
     // サーバー起動・停止ボタン状態変更
     stopButton.disabled = false;
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // サーバー停止確認ダイアログ
   closeOkButton.onclick = () => {
-    const result = ipcRenderer.sendSync('stop-server');
+    const result = ipcRenderer.sendSync(electronEvent.STOP_SERVER);
     log.debug('' + result);
     //ダイアログクローズ
     (dialog as any).close();
@@ -101,6 +101,18 @@ document.addEventListener('DOMContentLoaded', () => {
     //ダイアログクローズ
     (alertDialog as any).close();
     return;
+  };
+
+  // コメントテストボタン
+  const commentTestButton = document.getElementById('button-comment-test') as HTMLInputElement;
+  commentTestButton.onclick = () => {
+    const config = buildConfigJson();
+    log.debug('config=');
+    log.debug(config);
+    //設定情報をローカルストレージへ保存
+    saveConfigToLocalStrage(config);
+
+    ipcRenderer.send(electronEvent.COMMENT_TEST, config);
   };
 });
 

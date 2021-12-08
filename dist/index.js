@@ -303,6 +303,8 @@ exports.electronEvent = {
     FORCE_SCROLL: 'FORCE_SCROLL',
     /** ステータス更新 */
     UPDATE_STATUS: 'UPDATE_STATUS',
+    /** コメントテスト */
+    COMMENT_TEST: 'COMMENT_TEST',
 };
 
 
@@ -2202,9 +2204,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTranslateDom = exports.createDom = exports.findSeList = void 0;
+exports.createTranslateDom = exports.sendDom = exports.createDom = exports.findSeList = void 0;
 var path_1 = __importDefault(__webpack_require__(/*! path */ "path"));
 var express_1 = __importDefault(__webpack_require__(/*! express */ "express"));
+var cors_1 = __importDefault(__webpack_require__(/*! cors */ "cors"));
 var electron_log_1 = __importDefault(__webpack_require__(/*! electron-log */ "electron-log"));
 var dank_twitch_irc_1 = __webpack_require__(/*! dank-twitch-irc */ "dank-twitch-irc");
 var youtube_chat_1 = __webpack_require__(/*! ./youtube-chat */ "./src/main/youtube-chat/index.ts");
@@ -2264,7 +2267,7 @@ electron_1.ipcMain.on(const_1.electronEvent.APPLY_CONFIG, function (event, confi
                 globalThis.electron.threadNumber = Number(ret[ret.length - 1].number);
                 electron_log_1.default.info("[apply-config] new res num is " + globalThis.electron.threadNumber);
                 // チャットウィンドウとブラウザに、末尾のスレだけ反映する
-                sendDom([ret[ret.length - 1]]);
+                exports.sendDom([ret[ret.length - 1]]);
                 // スレタイ更新
                 globalThis.electron.mainWindow.webContents.send(const_1.electronEvent.UPDATE_STATUS, { commentType: 'bbs', category: 'title', message: ret[0].threadTitle });
                 _a.label = 4;
@@ -2276,7 +2279,7 @@ electron_1.ipcMain.on(const_1.electronEvent.APPLY_CONFIG, function (event, confi
  * サーバー起動
  */
 electron_1.ipcMain.on(const_1.electronEvent.START_SERVER, function (event, config) { return __awaiter(void 0, void 0, void 0, function () {
-    var expressInstance, nico, jpn;
+    var expressApp, expressInstance, nico, jpn;
     return __generator(this, function (_a) {
         globalThis.electron.chatWindow.webContents.send(const_1.electronEvent.CLEAR_COMMENT);
         globalThis.electron.translateWindow.webContents.send(const_1.electronEvent.CLEAR_COMMENT);
@@ -2284,7 +2287,9 @@ electron_1.ipcMain.on(const_1.electronEvent.START_SERVER, function (event, confi
         globalThis.electron.commentQueueList = [];
         globalThis.electron.threadConnectionError = 0;
         serverId = new Date().getTime();
-        expressInstance = express_ws_1.default(express_1.default());
+        expressApp = express_1.default();
+        expressApp.use(cors_1.default());
+        expressInstance = express_ws_1.default(expressApp);
         app = expressInstance.app;
         aWss = expressInstance.getWss();
         app.set('view engine', 'ejs');
@@ -2415,8 +2420,8 @@ electron_1.ipcMain.on(const_1.electronEvent.START_SERVER, function (event, confi
         // WebSocketを立てる
         app.ws('/ws', function (ws, req) {
             ws.on('message', function (message) {
-                electron_log_1.default.debug('Received: ' + message);
-                if (message === 'ping') {
+                electron_log_1.default.debug('Received: ' + message.toString());
+                if (message.toString() === 'ping') {
                     ws.send('pong');
                 }
             });
@@ -2433,6 +2438,40 @@ electron_1.ipcMain.on(const_1.electronEvent.START_SERVER, function (event, confi
         return [2 /*return*/];
     });
 }); });
+electron_1.ipcMain.on(const_1.electronEvent.COMMENT_TEST, function (event, config) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        globalThis.config = config;
+        return [2 /*return*/, commentTest()];
+    });
+}); });
+var commentTest = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var textList, text;
+    return __generator(this, function (_a) {
+        // コメントテスト
+        try {
+            textList = [
+                'ﾃｽﾃｽｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗ',
+                '∈(･ω･)∋ ﾀﾞﾑｰ',
+                'おめーらいつまで経っても<br/>ピアキャストかよ',
+                "Hello everyone!<br/>I'm Unacast<br/><br/>Yes.",
+            ];
+            text = textList[Math.floor(Math.random() * textList.length)];
+            exports.sendDom([
+                {
+                    id: '100',
+                    name: 'ななしさん',
+                    text: text,
+                    imgUrl: './img/unacast.png',
+                    from: 'bbs',
+                },
+            ]);
+        }
+        catch (e) {
+            electron_log_1.default.debug(e);
+        }
+        return [2 /*return*/];
+    });
+}); };
 var findSeList = function () { return __awaiter(void 0, void 0, void 0, function () {
     var list, e_1;
     return __generator(this, function (_a) {
@@ -2775,14 +2814,14 @@ var taskScheduler = function (exeId) { return __awaiter(void 0, void 0, void 0, 
                 if (!globalThis.config.dispSort) {
                     temp = temp.reverse();
                 }
-                sendDom(temp);
+                exports.sendDom(temp);
                 if (globalThis.config.translate.enable) {
                     (_a = globalThis.electron.translateQueueList).push.apply(_a, temp);
                 }
                 return [3 /*break*/, 3];
             case 1:
                 comment = globalThis.electron.commentQueueList.shift();
-                return [4 /*yield*/, sendDom([comment])];
+                return [4 /*yield*/, exports.sendDom([comment])];
             case 2:
                 _f.sent();
                 if (globalThis.config.translate.enable) {
@@ -2993,9 +3032,11 @@ var sendDom = function (messageList) { return __awaiter(void 0, void 0, void 0, 
                     type: 'add',
                     message: domStr,
                 };
-                aWss.clients.forEach(function (client) {
-                    client.send(JSON.stringify(socketObject_1));
-                });
+                if (aWss) {
+                    aWss.clients.forEach(function (client) {
+                        client.send(JSON.stringify(socketObject_1));
+                    });
+                }
                 // レンダラーのコメント一覧にも表示
                 sendDomForChatWindow(newList);
                 if (!(config.playSe && globalThis.electron.seList.length > 0)) return [3 /*break*/, 2];
@@ -3040,6 +3081,7 @@ var sendDom = function (messageList) { return __awaiter(void 0, void 0, void 0, 
         }
     });
 }); };
+exports.sendDom = sendDom;
 /** チャットウィンドウへのコメント表示 */
 var sendDomForChatWindow = function (messageList) {
     var domStr2 = util_1.judgeAaMessage(messageList)
@@ -3803,6 +3845,17 @@ module.exports = require("cheerio");
 /***/ (function(module, exports) {
 
 module.exports = require("child_process");
+
+/***/ }),
+
+/***/ "cors":
+/*!***********************!*\
+  !*** external "cors" ***!
+  \***********************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+module.exports = require("cors");
 
 /***/ }),
 

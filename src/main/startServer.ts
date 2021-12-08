@@ -1,6 +1,7 @@
 import http from 'http';
 import path from 'path';
 import express, { Request, Response } from 'express';
+import cors from 'cors';
 import log from 'electron-log';
 import { ChatClient } from 'dank-twitch-irc';
 import { LiveChat } from './youtube-chat';
@@ -86,7 +87,9 @@ ipcMain.on(electronEvent.START_SERVER, async (event: any, config: typeof globalT
   globalThis.electron.threadConnectionError = 0;
   serverId = new Date().getTime();
 
-  const expressInstance = expressWs(express());
+  const expressApp = express();
+  expressApp.use(cors());
+  const expressInstance = expressWs(expressApp);
   app = expressInstance.app;
   aWss = expressInstance.getWss();
 
@@ -238,8 +241,8 @@ ipcMain.on(electronEvent.START_SERVER, async (event: any, config: typeof globalT
   // WebSocketを立てる
   app.ws('/ws', (ws, req) => {
     ws.on('message', (message) => {
-      log.debug('Received: ' + message);
-      if (message === 'ping') {
+      log.debug('Received: ' + message.toString());
+      if (message.toString() === 'ping') {
         ws.send('pong');
       }
     });
@@ -256,6 +259,35 @@ ipcMain.on(electronEvent.START_SERVER, async (event: any, config: typeof globalT
   // 成功メッセージ返却
   event.returnValue = 'success';
 });
+
+ipcMain.on(electronEvent.COMMENT_TEST, async (event: any, config: typeof globalThis['config']) => {
+  globalThis.config = config;
+  return commentTest();
+});
+
+const commentTest = async () => {
+  // コメントテスト
+  try {
+    const textList = [
+      'ﾃｽﾃｽｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗ',
+      '∈(･ω･)∋ ﾀﾞﾑｰ',
+      'おめーらいつまで経っても<br/>ピアキャストかよ',
+      "Hello everyone!<br/>I'm Unacast<br/><br/>Yes.",
+    ];
+    const text = textList[Math.floor(Math.random() * textList.length)];
+    sendDom([
+      {
+        id: '100',
+        name: 'ななしさん',
+        text: text,
+        imgUrl: './img/unacast.png',
+        from: 'bbs',
+      },
+    ]);
+  } catch (e) {
+    log.debug(e);
+  }
+};
 
 export const findSeList = async () => {
   try {
@@ -759,7 +791,7 @@ export const createDom = (message: UserComment, type: 'chat' | 'server', isAA: b
  * 必要ならレス着信音も鳴らす
  * @param message
  */
-const sendDom = async (messageList: UserComment[]) => {
+export const sendDom = async (messageList: UserComment[]) => {
   try {
     // AA判定
     const newList = judgeAaMessage(messageList);
@@ -770,9 +802,11 @@ const sendDom = async (messageList: UserComment[]) => {
       type: 'add',
       message: domStr,
     };
-    aWss.clients.forEach((client) => {
-      client.send(JSON.stringify(socketObject));
-    });
+    if (aWss) {
+      aWss.clients.forEach((client) => {
+        client.send(JSON.stringify(socketObject));
+      });
+    }
 
     // レンダラーのコメント一覧にも表示
     sendDomForChatWindow(newList);

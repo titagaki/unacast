@@ -36,4 +36,7 @@ export const electronEvent = {
 
   /** ステータス更新 */
   UPDATE_STATUS: 'UPDATE_STATUS',
+
+  /** コメントテスト */
+  COMMENT_TEST: 'COMMENT_TEST',
 };

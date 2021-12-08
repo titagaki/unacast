@@ -11,6 +11,7 @@ let dispType = 0;
 /** ポート番号 */
 const port = window.location.port;
 const hostname = window.location.origin;
+const host = window.location.origin.replace('http://', '').replace(/:\d+/, '');
 let initMessage = '';
 window.onload = async () => {
   const config = await fetchServerConfig();
@@ -56,7 +57,7 @@ let pingWsIntervalTimer;
 const checkWsConnect = () => {
   if (socket) return;
   try {
-    const url = `ws://localhost:${port}/ws`;
+    const url = `ws://${host}:${port}/ws`;
     console.log(`WS 接続開始: ${url}`);
 
     socket = new WebSocket(url);

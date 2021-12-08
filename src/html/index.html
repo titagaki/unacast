@@ -19,7 +19,7 @@
       <ul id="comments"></ul>
 
       <div>サーバー起動、適用ボタンクリックで設定が反映されます。</div>
-      <div>
+      <div style="position:sticky; top: 0; z-index: 10; background-color: white; height: 50px; width: 100%;">
         <button type="button" id="button-config-apply" class="mdl-button mdl-js-button mdl-button--raised">
           適用
         </button>
@@ -32,6 +32,9 @@
           停止
         </button>
 
+        <button type="button" id="button-comment-test" class="mdl-button mdl-js-button mdl-button--raised" style="margin-left: 30px;">
+          テスト
+        </button>
       </div>
 
       <!-- 確認ダイアログ -->
@@ -57,7 +60,7 @@
       </dialog>
       <!-- /アラートダイアログ -->
 
-      <div class="mdl-textfield mdl-js-textfield" style="width: 100%">
+      <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
         <div class="subtitle">ポート番号</div>
         <div id="port-number-area">
           <div class="labeledInputArea">

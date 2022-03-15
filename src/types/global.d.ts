@@ -9,6 +9,7 @@ declare global {
     let mainWindow: BrowserWindow;
     let chatWindow: BrowserWindow;
     let translateWindow: BrowserWindow;
+    let imagePreviewWindow: BrowserWindow;
 
     /** SEファイルリスト */
     let seList: string[];

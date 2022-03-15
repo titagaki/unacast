@@ -37,6 +37,7 @@ const renderer = {
     index: './src/renderer/renderer',
     chat: './src/renderer/chat',
     translate: './src/renderer/translate',
+    imagePreview: './src/renderer/imagePreview',
   },
   output: {
     filename: '[name].js',

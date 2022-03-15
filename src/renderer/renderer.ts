@@ -620,3 +620,7 @@ ipcRenderer.on(electronEvent.UPDATE_STATUS, async (event: any, args: { commentTy
 ipcRenderer.on(electronEvent.SAVE_CONFIG, async (event: any, arg: typeof globalThis.config) => {
   saveConfigToLocalStrage(arg);
 });
+
+ipcRenderer.on(electronEvent.PREVIEW_IMAGE, (event: any, url: string) => {
+  window.electron.imagePreviewWindow.webContents.send(electronEvent.PREVIEW_IMAGE, url);
+});

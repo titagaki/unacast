@@ -23,6 +23,7 @@ const urlopen = (url) => {
   }
   window.open(tmp, "_blank");
 };
+const imageopen = urlopen;
 
 let initMessage = '';
 window.onload = async () => {
@@ -35,6 +36,7 @@ window.onload = async () => {
   wordBreak = config.wordBreak;
   dispType = config.dispType;
   initMessage = config.initMessage;
+
   resetCommentView(initMessage);
 
   // クラスの付与
@@ -50,7 +52,24 @@ window.onload = async () => {
   }
 
   checkServerConfig();
-  readThread();
+  readThread().then(() => {
+    // スクロール可能にする
+    if(ignoreReset) {
+      document.getElementById("parent").style.overflow = "initial";
+      document.getElementsByTagName("body")[0].style.overflow = "initial";
+
+      if(dispSort) {
+        document.getElementById("res-list").style.position = "initial";
+      }
+
+      addWheelEvent();
+
+      setInterval(() => {
+        scrollWindow();
+      }, 1000);
+    }
+
+  });
   checkWsConnect();
 
   // WebSocket接続
@@ -60,12 +79,65 @@ window.onload = async () => {
   setInterval(checkServerConfig, 3 * 1000);
 };
 
+/** 今触ってる */
+let nowTouch = false;
+/** タッチ判定解除のタイマー */
+let touchTimer = 0;
+
+/** ウインドウをスクロールする */
+function scrollWindow () {
+  if(dispSort) {
+    scrollBottom();
+  } else {
+    scrollTop();
+  }
+}
+
+/** 最上部にスクロール */
+function scrollTop () {
+  if(!nowTouch) {
+    console.log("自動スクロール top");
+    $('body').animate({
+      scrollTop: 0
+    },500);    
+    nowTouch = false;
+  }
+}
+
+/** 最下部にスクロール */
+function scrollBottom () {
+  if(!nowTouch) {
+    console.log("自動スクロール bottom");
+    $('body').animate({
+      scrollTop: $("#res-list").height()
+    },500);
+    nowTouch = false;
+  }
+}
+
+const addWheelEvent = () => {
+  const func = () => {
+    clearTimeout(touchTimer);
+    console.log("触った");
+    nowTouch = true;
+
+    touchTimer = setTimeout(() => {
+      console.log("解除");
+      nowTouch = false;
+    } ,10000);
+  }
+
+  $(window).on('mousewheel', func);
+  $("#res-list").on('touchstart', func);
+  $("#res-list").on('touchmove', func);
+}
+
 /** @type WebSocket */
 let socket;
 /** @type number */
 let pingWsIntervalTimer;
 
-/** WebSocketの接続 */
+/** unacast本体とのWebSocket接続 */
 const checkWsConnect = () => {
   if (socket) return;
   try {
@@ -89,6 +161,7 @@ const checkWsConnect = () => {
         switch (json.type) {
           case 'add': {
             addCommentItems(json.message);
+            if(ignoreReset) scrollWindow();
             break;
           }
           case 'reset': {
@@ -143,7 +216,7 @@ const readThread = () => {
   // 内部で作成したレス取得APIを呼び出す
   const requestUrl = `${hostname}/getRes`;
   //fetchでレスを取得する
-  fetch(requestUrl, {
+  return fetch(requestUrl, {
     method: 'GET',
     encoding: null,
     headers: {

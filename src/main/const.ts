@@ -39,4 +39,7 @@ export const electronEvent = {
 
   /** コメントテスト */
   COMMENT_TEST: 'COMMENT_TEST',
+
+  /** 画像プレビュー */
+  PREVIEW_IMAGE: 'PREVIEW_IMAGE',
 };

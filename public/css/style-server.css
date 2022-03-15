@@ -1,3 +1,5 @@
+/** レス表示用CSS */
+
 body {
   /* この辺の項目は変える必要ないと思う */
   margin: 0px auto;
@@ -129,9 +131,12 @@ img.icon {
 .url {
   color: skyblue;
   cursor: pointer;
+  font-size: smaller;
+  word-break: keep-all; /* 長いURLを折り返したいならbreak-allとか */
 }
 
 /** 画像サムネイル */
 .img {
   height: 100px;
+  cursor: pointer;
 }

@@ -771,7 +771,7 @@ export const createDom = (message: UserComment, type: 'chat' | 'server', isAA: b
           if (tmp.match(/^ttp/)) {
             tmp = `h${tmp}`;
           }
-          return `<img class="img" src="${tmp}" />`;
+          return `<img class="img" src="${tmp}" onClick='imageopen("${tmp}")' />`;
         })
         .join('');
 
@@ -966,5 +966,10 @@ const sendDomForTranslateWindow = async (message: UserComment) => {
     globalThis.electron.translateWindow.webContents.send(electronEvent.SHOW_COMMENT_TL, { config: globalThis.config, dom: '<div>翻訳でエラー</div>' });
   }
 };
+
+ipcMain.on(electronEvent.PREVIEW_IMAGE, (event, url: string) => {
+  globalThis.electron.imagePreviewWindow.webContents.send(electronEvent.PREVIEW_IMAGE, url);
+  globalThis.electron.imagePreviewWindow.show();
+});
 
 export default {};

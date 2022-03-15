@@ -37,6 +37,7 @@ if (!app.requestSingleInstanceLock()) {
     mainWindow: null as any,
     chatWindow: null as any,
     translateWindow: null as any,
+    imagePreviewWindow: null as any,
     seList: [],
     twitchChat: null as any,
     youtubeChat: null as any,
@@ -162,6 +163,7 @@ if (!app.requestSingleInstanceLock()) {
 
     createChatWindow();
     createTranslateWindow();
+    createImagePreviewWindow();
   });
 
   // 音声再生できるようにする
@@ -240,4 +242,50 @@ const createTranslateWindow = () => {
   translateWindow.minimize();
   globalThis.electron.translateWindow = translateWindow;
   // translateWindow.webContents.openDevTools();
+};
+
+const createImagePreviewWindow = () => {
+  const windowState = windowStateKeeper({
+    defaultWidth: 400,
+    defaultHeight: 400,
+    file: 'imagePreview.json',
+  });
+  const iconPath = path.resolve(__dirname, '../icon.png');
+
+  const childwindow = new electron.BrowserWindow({
+    x: windowState.x,
+    y: windowState.y,
+    width: windowState.width,
+    height: windowState.height,
+
+    useContentSize: true,
+    icon: iconPath,
+    webPreferences: {
+      nodeIntegration: true,
+    },
+    // タスクバーに表示しない
+    skipTaskbar: true,
+
+    minimizable: false,
+    minHeight: 100,
+    closable: true,
+  });
+  windowState.manage(childwindow);
+
+  childwindow.setTitle('unacast');
+  childwindow.setMenu(null);
+  childwindow.hide();
+
+  // レンダラーで使用するhtmlファイルを指定する
+  childwindow.loadURL(path.resolve(__dirname, '../src/html/imagePreview.html'));
+
+  // ×押したらインスタンス再生成
+  childwindow.on('close', (e) => {
+    setTimeout(() => {
+      createImagePreviewWindow();
+    }, 10);
+  });
+
+  globalThis.electron.imagePreviewWindow = childwindow;
+  // childwindow.webContents.openDevTools();
 };

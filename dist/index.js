@@ -305,6 +305,8 @@ exports.electronEvent = {
     UPDATE_STATUS: 'UPDATE_STATUS',
     /** コメントテスト */
     COMMENT_TEST: 'COMMENT_TEST',
+    /** 画像プレビュー */
+    PREVIEW_IMAGE: 'PREVIEW_IMAGE',
 };
 
 
@@ -896,6 +898,7 @@ else {
         mainWindow: null,
         chatWindow: null,
         translateWindow: null,
+        imagePreviewWindow: null,
         seList: [],
         twitchChat: null,
         youtubeChat: null,
@@ -1019,6 +1022,7 @@ else {
         });
         createChatWindow();
         createTranslateWindow();
+        createImagePreviewWindow();
     });
     // 音声再生できるようにする
     app.commandLine.appendSwitch('--autoplay-policy', 'no-user-gesture-required');
@@ -1084,6 +1088,44 @@ var createTranslateWindow = function () {
     translateWindow.minimize();
     globalThis.electron.translateWindow = translateWindow;
     // translateWindow.webContents.openDevTools();
+};
+var createImagePreviewWindow = function () {
+    var windowState = electron_window_state_1.default({
+        defaultWidth: 400,
+        defaultHeight: 400,
+        file: 'imagePreview.json',
+    });
+    var iconPath = path_1.default.resolve(__dirname, '../icon.png');
+    var childwindow = new electron_1.default.BrowserWindow({
+        x: windowState.x,
+        y: windowState.y,
+        width: windowState.width,
+        height: windowState.height,
+        useContentSize: true,
+        icon: iconPath,
+        webPreferences: {
+            nodeIntegration: true,
+        },
+        // タスクバーに表示しない
+        skipTaskbar: true,
+        minimizable: false,
+        minHeight: 100,
+        closable: true,
+    });
+    windowState.manage(childwindow);
+    childwindow.setTitle('unacast');
+    childwindow.setMenu(null);
+    childwindow.hide();
+    // レンダラーで使用するhtmlファイルを指定する
+    childwindow.loadURL(path_1.default.resolve(__dirname, '../src/html/imagePreview.html'));
+    // ×押したらインスタンス再生成
+    childwindow.on('close', function (e) {
+        setTimeout(function () {
+            createImagePreviewWindow();
+        }, 10);
+    });
+    globalThis.electron.imagePreviewWindow = childwindow;
+    // childwindow.webContents.openDevTools();
 };
 
 
@@ -3004,7 +3046,7 @@ var createDom = function (message, type, isAA) {
                 if (tmp.match(/^ttp/)) {
                     tmp = "h" + tmp;
                 }
-                return "<img class=\"img\" src=\"" + tmp + "\" />";
+                return "<img class=\"img\" src=\"" + tmp + "\" onClick='imageopen(\"" + tmp + "\")' />";
             })
                 .join('');
             domStr += '</div>';
@@ -3182,6 +3224,10 @@ var sendDomForTranslateWindow = function (message) { return __awaiter(void 0, vo
         }
     });
 }); };
+electron_1.ipcMain.on(const_1.electronEvent.PREVIEW_IMAGE, function (event, url) {
+    globalThis.electron.imagePreviewWindow.webContents.send(const_1.electronEvent.PREVIEW_IMAGE, url);
+    globalThis.electron.imagePreviewWindow.show();
+});
 exports.default = {};
 
 

@@ -12,6 +12,18 @@ let dispType = 0;
 const port = window.location.port;
 const hostname = window.location.origin;
 const host = window.location.origin.replace('http://', '').replace(/:\d+/, '');
+
+/** 削除要求を無視する */
+let ignoreReset = window.location.search.includes("ignore-reset");
+
+const urlopen = (url) => {
+  let tmp = url;
+  if (url.match(/^ttp/)) {
+    tmp = `h${url}`;
+  }
+  window.open(tmp, "_blank");
+};
+
 let initMessage = '';
 window.onload = async () => {
   const config = await fetchServerConfig();
@@ -80,7 +92,7 @@ const checkWsConnect = () => {
             break;
           }
           case 'reset': {
-            resetCommentView(json.message);
+            if(!ignoreReset) resetCommentView(json.message);
             break;
           }
         }
@@ -154,7 +166,7 @@ const readThread = () => {
         return;
       }
 
-      if (dispType === 0) {
+      if (dispType === 0 || ignoreReset) {
         resJson.forEach(async (resObj) => {
           await addCommentItems(resObj);
         });
@@ -199,23 +211,31 @@ const fetchServerConfig = async () => {
  * @param {string} html
  */
 const addCommentItems = async (html) => {
-  switch (dispType) {
-    case 0: {
-      // 表示順オプションで上に追加するか下に追加するか選ぶ
-      if (dispSort) {
-        $('#res-list').append(html);
-      } else {
-        $('#res-list').prepend(html);
-      }
-      break;
-    }
-    case 1: {
-      // 初期メッセージを非表示にする
-      $('#initMessage').hide();
+  if(ignoreReset) {
+    if (dispSort) {
       $('#res-list').append(html);
-      break;
+    } else {
+      $('#res-list').prepend(html);
     }
-    default: {
+  } else {
+    switch (dispType) {
+      case 0: {
+        // 表示順オプションで上に追加するか下に追加するか選ぶ
+        if (dispSort) {
+          $('#res-list').append(html);
+        } else {
+          $('#res-list').prepend(html);
+        }
+        break;
+      }
+      case 1: {
+        // 初期メッセージを非表示にする
+        $('#initMessage').hide();
+        $('#res-list').append(html);
+        break;
+      }
+      default: {
+      }
     }
   }
 };

@@ -776,6 +776,14 @@ export const createDom = (message: UserComment, type: 'chat' | 'server', isAA: b
         .join('');
 
       domStr += '</div>';
+
+      // 画像URL非表示が有効なら消す
+      if (globalThis.config.hideImgUrl) {
+        for (const imgurl of imgUrls) {
+          // log.info('非表示するぞ ' + imgurl);
+          domStr = domStr.replace(`<span class="url" onClick='urlopen("${imgurl}")'>${imgurl}</span>`, '');
+        }
+      }
     }
   }
 

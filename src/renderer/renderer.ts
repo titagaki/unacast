@@ -264,6 +264,7 @@ const buildConfigJson = () => {
     const elem = v as HTMLInputElement;
     if (elem.checked) thumbnail = Number(elem.value) as typeof globalThis['config']['thumbnail'];
   });
+  const hideImgUrl = (document.getElementById('checkbox-hideImgUrl') as any).checked === true;
 
   let typeYomiko: typeof globalThis['config']['typeYomiko'] = 'none';
   document.getElementsByName('typeYomiko').forEach((v) => {
@@ -332,6 +333,7 @@ const buildConfigJson = () => {
     showTime,
     wordBreak,
     thumbnail,
+    hideImgUrl,
     sePath,
     playSe,
     playSeVolume,
@@ -387,6 +389,7 @@ const loadConfigToLocalStrage = () => {
     showTime: false,
     wordBreak: true,
     thumbnail: 0,
+    hideImgUrl: false,
     sePath: '',
     playSeVolume: 100,
     playSe: false,
@@ -467,6 +470,7 @@ const loadConfigToLocalStrage = () => {
 
   // サムネイル表示
   (document.getElementById(`thumbnail_${config.thumbnail}`) as any).checked = true;
+  (document.getElementById('checkbox-hideImgUrl') as any).checked = config.hideImgUrl;
 
   (document.getElementById('yomiko-replace-newline') as any).checked == config.yomikoReplaceNewline;
 

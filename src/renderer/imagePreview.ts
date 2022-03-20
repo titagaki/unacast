@@ -1,9 +1,9 @@
-import electron, { remote, shell } from 'electron';
+import electron from 'electron';
 import electronlog from 'electron-log';
 import path from 'path';
 const log = electronlog.scope('renderer-imagePreview');
 import { electronEvent } from '../main/const';
-
+import crypto from 'crypto';
 const ipcRenderer = electron.ipcRenderer;
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -13,7 +13,8 @@ document.addEventListener('DOMContentLoaded', () => {
 ipcRenderer.on(electronEvent.PREVIEW_IMAGE, (event: any, url: string) => {
   document.title = `preview ${url}`;
   log.info('[preview-image] ' + url);
-  const id = btoa(encodeURIComponent(url)).replace('=', '');
+  const md5 = crypto.createHash('md5');
+  const id = 'a' + md5.update(url).digest('hex'); // 英文字先頭じゃないとクエリ的に怒られる
   log.info('[preview-image] ' + id);
 
   const tabname = path.basename(url);

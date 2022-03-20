@@ -87,6 +87,7 @@ declare global {
      * - 2: チャットウィンドウとサーバに表示
      */
     let thumbnail: 0 | 1 | 2;
+    let hideImgUrl: boolean;
     /** レス着信音のパス */
     let sePath: string;
     /** レス着信音再生 */

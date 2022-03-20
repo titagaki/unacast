@@ -3030,17 +3030,17 @@ var createDom = function (message, type, isAA) {
     var isThumbnailShow = (globalThis.config.thumbnail == 1 && type === 'chat') || globalThis.config.thumbnail == 2;
     if (isThumbnailShow) {
         var imgreg = new RegExp("(h?ttps?(://[-_.!~*'()a-zA-Z0-9;/?:@&=+$,%#]+)(.jpg|.png|.gif))", 'g');
-        var imgUrls_1 = [];
+        var imgUrls_2 = [];
         var matched = text.match(imgreg);
         if (matched) {
             matched.map(function (value) {
                 // log.info(value);
-                imgUrls_1.push(value);
+                imgUrls_2.push(value);
             });
         }
-        if (imgUrls_1.length > 0) {
+        if (imgUrls_2.length > 0) {
             domStr += '<div class="thumbnail">';
-            domStr += imgUrls_1
+            domStr += imgUrls_2
                 .map(function (url) {
                 var tmp = url;
                 if (tmp.match(/^ttp/)) {
@@ -3050,6 +3050,14 @@ var createDom = function (message, type, isAA) {
             })
                 .join('');
             domStr += '</div>';
+            // 画像URL非表示が有効なら消す
+            if (globalThis.config.hideImgUrl) {
+                for (var _i = 0, imgUrls_1 = imgUrls_2; _i < imgUrls_1.length; _i++) {
+                    var imgurl = imgUrls_1[_i];
+                    // log.info('非表示するぞ ' + imgurl);
+                    domStr = domStr.replace("<span class=\"url\" onClick='urlopen(\"" + imgurl + "\")'>" + imgurl + "</span>", '');
+                }
+            }
         }
     }
     // 〆

@@ -266,6 +266,15 @@ const buildConfigJson = () => {
   });
   const hideImgUrl = (document.getElementById('checkbox-hideImgUrl') as any).checked === true;
 
+  // エモート表示
+  const emoteAnimation = (document.getElementById('checkbox-emoteAnimation') as HTMLInputElement).checked === true;
+  
+  let emoteSize: typeof globalThis['config']['emoteSize'] = 1;
+  document.getElementsByName('emoteSize').forEach((v) => {
+    const elem = v as HTMLInputElement;
+    if (elem.checked) emoteSize = Number(elem.value) as typeof globalThis['config']['emoteSize'];
+  });
+
   let typeYomiko: typeof globalThis['config']['typeYomiko'] = 'none';
   document.getElementsByName('typeYomiko').forEach((v) => {
     const elem = v as HTMLInputElement;
@@ -334,6 +343,8 @@ const buildConfigJson = () => {
     wordBreak,
     thumbnail,
     hideImgUrl,
+    emoteAnimation,
+    emoteSize,
     sePath,
     playSe,
     playSeVolume,
@@ -390,6 +401,8 @@ const loadConfigToLocalStrage = () => {
     wordBreak: true,
     thumbnail: 0,
     hideImgUrl: false,
+    emoteAnimation: false,
+    emoteSize: 1,
     sePath: '',
     playSeVolume: 100,
     playSe: false,
@@ -471,6 +484,10 @@ const loadConfigToLocalStrage = () => {
   // サムネイル表示
   (document.getElementById(`thumbnail_${config.thumbnail}`) as any).checked = true;
   (document.getElementById('checkbox-hideImgUrl') as any).checked = config.hideImgUrl;
+
+  // エモート表示
+  (document.getElementById('checkbox-emoteAnimation') as any).checked = config.emoteAnimation;
+  (document.getElementById(`emoteSize_${config.emoteSize}`) as any).checked = config.emoteSize;
 
   (document.getElementById('yomiko-replace-newline') as any).checked == config.yomikoReplaceNewline;
 

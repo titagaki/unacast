@@ -330,9 +330,15 @@ const startTwitchChat = async () => {
       const name = escapeHtml(msg.displayName);
       let text = escapeHtml(msg.messageText);
       // エモートを画像タグにする
-      msg.emotes.map((emote) => {
-        text = text.replace(emote.code, `<img src="https://static-cdn.jtvnw.net/emoticons/v1/${emote.id}/1.0" />`);
-      });
+      if (globalThis.config.emoteAnimation) {
+        msg.emotes.map((emote) => {
+          text = text.replace(emote.code, `<img src="https://static-cdn.jtvnw.net/emoticons/v2/${emote.id}/default/light/${globalThis.config.emoteSize}.0" />`);
+        });
+      } else {
+        msg.emotes.map((emote) => {
+          text = text.replace(emote.code, `<img src="https://static-cdn.jtvnw.net/emoticons/v1/${emote.id}/${globalThis.config.emoteSize}.0" />`);
+        });
+      }
 
       globalThis.electron.commentQueueList.push({ imgUrl, name, text, from: 'twitch' });
     });

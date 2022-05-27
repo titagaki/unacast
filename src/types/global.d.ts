@@ -88,6 +88,9 @@ declare global {
      */
     let thumbnail: 0 | 1 | 2;
     let hideImgUrl: boolean;
+    /** エモートの表示設定 */
+    let emoteAnimation: boolean;
+    let emoteSize: 1 | 2 | 3;
     /** レス着信音のパス */
     let sePath: string;
     /** レス着信音再生 */

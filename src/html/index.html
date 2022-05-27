@@ -260,6 +260,26 @@
           <input id="min-display-time" class="mdl-textfield__input" type="text" required="true" pattern="[0-9]+(\.[0-9])?" value="2.5" />
           <span class="mdl-textfield__error">X.Y秒で入力してください</span>
         </div>
+
+        <div class="mdl-textfield mdl-js-textfield" style="width: 100%;">
+          <div class="subtitle">Twitchエモートの表示設定</div>
+          <label class="mdl-radio mdl-js-radio" for="emoteSize_1">
+            <input id="emoteSize_1" class="mdl-radio__button" type="radio" name="emoteSize" value="1" />
+            <span class="mdl-radio__label">サイズ小</span>
+          </label>
+          <label class="mdl-radio mdl-js-radio" for="emoteSize_2">
+            <input id="emoteSize_2" class="mdl-radio__button" type="radio" name="emoteSize" value="2" />
+            <span class="mdl-radio__label">サイズ中</span>
+          </label>
+          <label class="mdl-radio mdl-js-radio" for="emoteSize_3">
+            <input id="emoteSize_3" class="mdl-radio__button" type="radio" name="emoteSize" value="3" />
+            <span class="mdl-radio__label">サイズ大</span>
+          </label>
+          <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="checkbox-emoteAnimation">
+            <input type="checkbox" id="checkbox-emoteAnimation" class="mdl-checkbox__input" value="1" checked />
+            <span class="mdl-checkbox__label">アニメーション表示</span>
+          </label>
+        </div>
       </div>
 
       <div class="block">

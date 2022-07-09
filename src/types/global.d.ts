@@ -106,6 +106,8 @@ declare global {
     let bouyomiPrefix: string;
     /** 読み子へ渡す時に改行を置換 */
     let yomikoReplaceNewline: boolean;
+    /** 読み子へ渡す時にレス番号を追加 */
+    let yomikoReadResNumber: boolean;
     /** スレが通信エラーになった時の通知閾値 */
     let notifyThreadConnectionErrorLimit: number;
     /** スレのレス数が超えた時の通知 */

@@ -233,6 +233,7 @@ const buildConfigJson = () => {
   const bouyomiVolume = parseInt((document.getElementById('bouyomi-volume') as HTMLInputElement).value);
   const bouyomiPrefix = (document.getElementById('text-bouyomi-prefix') as HTMLInputElement).value;
   const yomikoReplaceNewline = (document.getElementById('yomiko-replace-newline') as any).checked === true;
+  const yomikoReadResNumber = (document.getElementById('yomiko-read-res-number') as any).checked === true;
 
   const notifyThreadConnectionErrorLimit = parseInt((document.getElementById('text-notify-threadConnectionErrorLimit') as HTMLInputElement).value);
   const notifyThreadResLimit = parseInt((document.getElementById('text-notify-threadResLimit') as HTMLInputElement).value);
@@ -343,6 +344,7 @@ const buildConfigJson = () => {
     bouyomiVolume,
     bouyomiPrefix,
     yomikoReplaceNewline,
+    yomikoReadResNumber,
     notifyThreadConnectionErrorLimit,
     notifyThreadResLimit,
     moveThread,
@@ -399,6 +401,7 @@ const loadConfigToLocalStrage = () => {
     bouyomiVolume: 50,
     bouyomiPrefix: '',
     yomikoReplaceNewline: false,
+    yomikoReadResNumber: false,
     notifyThreadConnectionErrorLimit: 0,
     notifyThreadResLimit: 0,
     moveThread: true,

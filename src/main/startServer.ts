@@ -833,7 +833,7 @@ export const sendDom = async (messageList: UserComment[]) => {
         await playYomiko(config.aamode.speakWord);
       } else {
         // タグを除去する
-        let text = newList[lastIdx].text.replace(/<br> /g, '\n ').replace(/<br>/g, '\n ');
+        let text = newList[lastIdx].text.replace(/<br.*?\/?>/g, '\n');
         text = text.replace(/<img.*?\/>/g, '');
         text = text.replace(/<a .*?>/g, '').replace(/<\/a>/g, '');
         text = unescapeHtml(text);

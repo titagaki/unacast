@@ -5,13 +5,15 @@ body {
   margin: 0px auto;
   overflow: hidden;
   text-align: left;
-  align: left;
 
-  background-color: rgba(0, 0, 0, 0.2); /*レス表示部の背景色＆不透明度*/
-  color: rgba(255, 255, 255, 255); /*文字色*/
+  background-color: rgba(0, 0, 0, 0.2);
+  /*レス表示部の背景色＆不透明度*/
+  color: rgba(255, 255, 255, 255);
+  /*文字色*/
   font-family: 'UD デジタル 教科書体 NK-B', 'メイリオ', 'ＭＳ Ｐゴシック', sans-serif;
   font-size: 18px;
-  line-height: 1.3em; /*改行ありのレスの行間*/
+  line-height: 1.3em;
+  /*改行ありのレスの行間*/
 }
 
 body {
@@ -42,13 +44,15 @@ body {
 
 /*レス表示部分の設定*/
 .content {
-  color: rgba(255, 255, 255, 255); /*文字色*/
+  color: rgba(255, 255, 255, 255);
+  /*文字色*/
 }
 
 /*レス番号表示部分の設定*/
 .resNumber {
-  color: #55ff55;
+  color: #99ff99;
 }
+
 /*レス番号の後に付け加える文字（区切り用）*/
 .resNumber::after {
   content: ' ';
@@ -56,8 +60,9 @@ body {
 
 /*名前表示部分の設定*/
 .name {
-  color: #55ff55;
+  color: #99ff99;
 }
+
 /*名前の後に付け加える文字（区切り用）*/
 .name::after {
   content: ' ';
@@ -68,6 +73,7 @@ body {
   font-size: 0.8em;
   color: #feffa0;
 }
+
 /*時刻の後に付け加える文字*/
 .date::after {
   content: ' ';
@@ -105,7 +111,7 @@ ul#res-list {
 li.list-item {
   display: block;
   /* コメント間の間隔 */
-  margin: 0.3em 0;
+  margin: 0.5em 0;
   display: flex;
 }
 
@@ -114,15 +120,17 @@ li.list-item {
   display: block;
   flex: none;
   /*表示部分の大きさ*/
-  width: 2em;
-  height: 2em;
-  /*アイコン右の余白*/
-  margin-right: 0.2em;
+  width: 1.8em;
+  height: 1.8em;
+  /*アイコンとの余白*/
+  margin-top: 3px;
+  margin-right: 1px;
 }
 
 /* アイコン */
 img.icon {
-  border-radius: 50%; /*角を丸める*/
+  border-radius: 50%;
+  /*角を丸める*/
   width: 24px;
   height: 24px;
 }
@@ -132,7 +140,8 @@ img.icon {
   color: skyblue;
   cursor: pointer;
   font-size: smaller;
-  word-break: keep-all; /* 長いURLを折り返したいならbreak-allとか */
+  word-break: keep-all;
+  /* 長いURLを折り返したいならbreak-allとか */
 }
 
 /** 画像サムネイル */

@@ -271,8 +271,8 @@ const commentTest = async () => {
     const textList = [
       'ﾃｽﾃｽｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗ',
       '∈(･ω･)∋ ﾀﾞﾑｰ',
-      'おめーらいつまで経っても<br/>ピアキャストかよ',
-      "Hello everyone!<br/>I'm Unacast<br/><br/>Yes.",
+      'おめーらいつまで経っても<br />ピアキャストかよ',
+      "Hello everyone!<br />I'm Unacast<br /><br />Yes.",
     ];
     const text = textList[Math.floor(Math.random() * textList.length)];
     sendDom([
@@ -840,6 +840,11 @@ export const sendDom = async (messageList: UserComment[]) => {
 
         if (globalThis.config.yomikoReplaceNewline) {
           text = text.replace(/\r\n/g, ' ').replace(/\n/g, ' ');
+        }
+
+        // fromを読み上げる
+        if (newList[lastIdx].from === 'twitch') {
+          text = 'twitchからカキコ\n' + text;
         }
 
         // レス番号を読み上げる

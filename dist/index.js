@@ -2297,7 +2297,7 @@ electron_1.ipcMain.on(const_1.electronEvent.APPLY_CONFIG, function (event, confi
             case 2:
                 // initメッセージ
                 resetInitMessage();
-                if (!isChangedUrl) return [3 /*break*/, 4];
+                if (!(isChangedUrl && config.url)) return [3 /*break*/, 4];
                 return [4 /*yield*/, getRes_1.getRes(globalThis.config.url, NaN)];
             case 3:
                 ret = _a.sent();
@@ -2957,19 +2957,22 @@ var playYomiko = function (msg) { return __awaiter(void 0, void 0, void 0, funct
 electron_1.ipcMain.on(const_1.electronEvent.SPEAKING_END, function (event) { return (isSpeaking = false); });
 var isPlayingSe = false;
 var playSe = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var wavfilepath;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var wavfilepath, _i, _a, deviceId;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0:
                 wavfilepath = globalThis.electron.seList[Math.floor(Math.random() * globalThis.electron.seList.length)];
                 isPlayingSe = true;
-                globalThis.electron.mainWindow.webContents.send(const_1.electronEvent.PLAY_SOUND_START, { wavfilepath: wavfilepath, volume: globalThis.config.playSeVolume });
-                _a.label = 1;
+                for (_i = 0, _a = globalThis.config.audioOutputDevices; _i < _a.length; _i++) {
+                    deviceId = _a[_i];
+                    globalThis.electron.mainWindow.webContents.send(const_1.electronEvent.PLAY_SOUND_START, { wavfilepath: wavfilepath, volume: globalThis.config.playSeVolume, deviceId: deviceId });
+                }
+                _b.label = 1;
             case 1:
                 if (!isPlayingSe) return [3 /*break*/, 3];
                 return [4 /*yield*/, util_1.sleep(50)];
             case 2:
-                _a.sent();
+                _b.sent();
                 return [3 /*break*/, 1];
             case 3: return [2 /*return*/];
         }

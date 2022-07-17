@@ -138,6 +138,7 @@ declare global {
       enable: boolean;
       targetLang: 'ja' | 'en';
     };
+    let audioOutputDevices: string[];
   }
 }
 

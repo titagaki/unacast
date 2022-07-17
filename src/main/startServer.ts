@@ -58,7 +58,7 @@ ipcMain.on(electronEvent.APPLY_CONFIG, async (event: any, config: typeof globalT
   resetInitMessage();
 
   // スレのURLが変わった
-  if (isChangedUrl) {
+  if (isChangedUrl && config.url) {
     // 新スレを取得
     const ret = await getBbsResponse(globalThis.config.url, NaN);
     log.debug(ret);
@@ -672,7 +672,9 @@ const playSe = async () => {
   // log.info('[playSe] start');
   const wavfilepath = globalThis.electron.seList[Math.floor(Math.random() * globalThis.electron.seList.length)];
   isPlayingSe = true;
-  globalThis.electron.mainWindow.webContents.send(electronEvent.PLAY_SOUND_START, { wavfilepath, volume: globalThis.config.playSeVolume });
+  for (const deviceId of globalThis.config.audioOutputDevices) {
+    globalThis.electron.mainWindow.webContents.send(electronEvent.PLAY_SOUND_START, { wavfilepath, volume: globalThis.config.playSeVolume, deviceId: deviceId });
+  }
 
   while (isPlayingSe) {
     await sleep(50);

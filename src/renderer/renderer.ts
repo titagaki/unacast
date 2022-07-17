@@ -6,10 +6,10 @@ import { sleep } from '../main/util';
 
 const ipcRenderer = electron.ipcRenderer;
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   log.debug('DOM Content Loaded');
   // 設定のロード
-  loadConfigToLocalStrage();
+  await loadConfigToLocalStrage();
 
   // 設定適用ボタン
   const applyButton = document.getElementById('button-config-apply') as HTMLInputElement;
@@ -107,11 +107,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const commentTestButton = document.getElementById('button-comment-test') as HTMLInputElement;
   commentTestButton.onclick = () => {
     const config = buildConfigJson();
-    log.debug('config=');
-    log.debug(config);
-    //設定情報をローカルストレージへ保存
-    saveConfigToLocalStrage(config);
-
     ipcRenderer.send(electronEvent.COMMENT_TEST, config);
   };
 });
@@ -312,6 +307,17 @@ const buildConfigJson = () => {
     };
   }
 
+  // 音声出力先
+  const audioOutputDevices: string[] = [];
+  document.getElementsByName('audioOutputDevices').forEach((val) => {
+    const isChecked = (val as HTMLInputElement).checked;
+    const id = (val as HTMLInputElement).id.replace('audioOutputDevices_', '');
+    if (isChecked) {
+      // log.info('出力先：' + id);
+      audioOutputDevices.push(id);
+    }
+  });
+
   const config: typeof globalThis['config'] = {
     url: url,
     resNumber,
@@ -350,6 +356,7 @@ const buildConfigJson = () => {
     dispType,
     aamode,
     translate,
+    audioOutputDevices,
   };
 
   return config;
@@ -367,7 +374,7 @@ const saveConfigToLocalStrage = (config: typeof globalThis['config']) => {
 /**
  * ローカルストレージから設定をロードする
  */
-const loadConfigToLocalStrage = () => {
+const loadConfigToLocalStrage = async () => {
   const initConfig: typeof globalThis['config'] = {
     url: '',
     resNumber: '',
@@ -416,6 +423,7 @@ const loadConfigToLocalStrage = () => {
       enable: true,
       targetLang: 'ja',
     },
+    audioOutputDevices: ['default'],
   };
 
   const storageStr = localStorage.getItem('config');
@@ -425,6 +433,21 @@ const loadConfigToLocalStrage = () => {
     ...initConfig,
     ...storageJson,
   };
+
+  // 使用可能なデバイスの一覧を取得
+  const devices = await navigator.mediaDevices.enumerateDevices();
+  const audiooutput = devices.filter((device) => device.kind === 'audiooutput');
+  log.info(audiooutput);
+  audiooutput.map((val) => {
+    const checkedStr = globalThis.config.audioOutputDevices.includes(val.deviceId) ? 'checked' : '';
+    const domstr = `
+  <label class="mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect" for="audioOutputDevices_${val.deviceId}">
+    <input type="checkbox" id="audioOutputDevices_${val.deviceId}" name="audioOutputDevices" class="mdl-checkbox__input" ${checkedStr} />
+    <span class="mdl-checkbox__label">${val.label}</span>
+  </label>
+    `;
+    (document.getElementById('audioOutputDevices') as any).insertAdjacentHTML('afterbegin', domstr);
+  });
 
   // 表示に反映する
   // アイコン表示初期化
@@ -529,9 +552,15 @@ ipcRenderer.on(electronEvent.START_SERVER_REPLY, (event: any, arg: any) => {
 });
 
 // 着信音再生
-const audioElem = new Audio();
-ipcRenderer.on(electronEvent.PLAY_SOUND_START, (event: any, arg: { wavfilepath: string; volume: number }) => {
+ipcRenderer.on(electronEvent.PLAY_SOUND_START, (event: any, arg: { wavfilepath: string; volume: number; deviceId: string }) => {
+  playSe(arg);
+});
+
+const playSe = async (arg: { wavfilepath: string; volume: number; deviceId: string }) => {
+  const audioElem = new Audio();
+
   try {
+    await (audioElem as any).setSinkId(arg.deviceId);
     audioElem.volume = arg.volume / 100;
     audioElem.src = arg.wavfilepath;
     audioElem.play();
@@ -545,7 +574,7 @@ ipcRenderer.on(electronEvent.PLAY_SOUND_START, (event: any, arg: { wavfilepath: 
     log.error(e);
     ipcRenderer.send(electronEvent.PLAY_SOUND_END);
   }
-});
+};
 
 ipcRenderer.on(electronEvent.WAIT_YOMIKO_TIME, async (event: any, arg: string) => {
   await yomikoTime(arg);

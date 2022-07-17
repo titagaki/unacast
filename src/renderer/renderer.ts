@@ -263,7 +263,7 @@ const buildConfigJson = () => {
 
   // エモート表示
   const emoteAnimation = (document.getElementById('checkbox-emoteAnimation') as HTMLInputElement).checked === true;
-  
+
   let emoteSize: typeof globalThis['config']['emoteSize'] = 1;
   document.getElementsByName('emoteSize').forEach((v) => {
     const elem = v as HTMLInputElement;

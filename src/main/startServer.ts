@@ -834,12 +834,14 @@ export const sendDom = async (messageList: UserComment[]) => {
 
     // 読み子
     if (globalThis.config.typeYomiko !== 'none') {
+      const lastIdx = newList.length - 1;
+
       // 対象のレスがAAで、AAモードが有効なら、読み上げ分はアスキーアートにする
-      if (newList[newList.length - 1].isAA && config.aamode.enable) {
+      if (newList[lastIdx].isAA && config.aamode.enable) {
         await playYomiko(config.aamode.speakWord);
       } else {
         // タグを除去する
-        let text = newList[newList.length - 1].text.replace(/<br.*?\/?>/g, '\n');
+        let text = newList[lastIdx].text.replace(/<br.*?\/?>/g, '\n');
         text = text.replace(/<img.*?\/>/g, '');
         text = text.replace(/<a .*?>/g, '').replace(/<\/a>/g, '');
         text = unescapeHtml(text);
@@ -847,6 +849,12 @@ export const sendDom = async (messageList: UserComment[]) => {
         if (globalThis.config.yomikoReplaceNewline) {
           text = text.replace(/\r\n/g, ' ').replace(/\n/g, ' ');
         }
+
+        // レス番号を読み上げる
+        if (config.yomikoReadResNumber && newList[lastIdx].number) {
+          text = `レス${newList[lastIdx].number}\n` + text;
+        }
+
         await playYomiko(text);
       }
     }

@@ -5,7 +5,6 @@ body {
   margin: 0px auto;
   overflow: hidden;
   text-align: left;
-  align: left;
 
   background-color: rgba(0, 0, 0, 0.2); /*レス表示部の背景色＆不透明度*/
   color: rgba(255, 255, 255, 255); /*文字色*/
@@ -47,7 +46,7 @@ body {
 
 /*レス番号表示部分の設定*/
 .resNumber {
-  color: #55ff55;
+  color: #99ff99;
 }
 /*レス番号の後に付け加える文字（区切り用）*/
 .resNumber::after {
@@ -56,7 +55,7 @@ body {
 
 /*名前表示部分の設定*/
 .name {
-  color: #55ff55;
+  color: #99ff99;
 }
 /*名前の後に付け加える文字（区切り用）*/
 .name::after {
@@ -105,7 +104,7 @@ ul#res-list {
 li.list-item {
   display: block;
   /* コメント間の間隔 */
-  margin: 0.3em 0;
+  margin: 0.5em 0;
   display: flex;
 }
 
@@ -114,10 +113,11 @@ li.list-item {
   display: block;
   flex: none;
   /*表示部分の大きさ*/
-  width: 2em;
-  height: 2em;
+  width: 1.8em;
+  height: 1.8em;
   /*アイコン右の余白*/
-  margin-right: 0.2em;
+  margin-top: 3px;
+  margin-right: 1px;
 }
 
 /* アイコン */

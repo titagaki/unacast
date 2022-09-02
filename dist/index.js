@@ -2494,8 +2494,8 @@ var commentTest = function () { return __awaiter(void 0, void 0, void 0, functio
             textList = [
                 'ﾃｽﾃｽｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗｗ',
                 '∈(･ω･)∋ ﾀﾞﾑｰ',
-                'おめーらいつまで経っても<br/>ピアキャストかよ',
-                "Hello everyone!<br/>I'm Unacast<br/><br/>Yes.",
+                'おめーらいつまで経っても<br />ピアキャストかよ',
+                "Hello everyone!<br />I'm Unacast<br /><br />Yes.",
             ];
             text = textList[Math.floor(Math.random() * textList.length)];
             exports.sendDom([
@@ -3081,7 +3081,7 @@ exports.createDom = createDom;
  * @param message
  */
 var sendDom = function (messageList) { return __awaiter(void 0, void 0, void 0, function () {
-    var newList, domStr, socketObject_1, text, e_2;
+    var newList, domStr, socketObject_1, lastIdx, text, e_2;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -3106,18 +3106,27 @@ var sendDom = function (messageList) { return __awaiter(void 0, void 0, void 0, 
                 _a.label = 2;
             case 2:
                 if (!(globalThis.config.typeYomiko !== 'none')) return [3 /*break*/, 6];
-                if (!(newList[newList.length - 1].isAA && config.aamode.enable)) return [3 /*break*/, 4];
+                lastIdx = newList.length - 1;
+                if (!(newList[lastIdx].isAA && config.aamode.enable)) return [3 /*break*/, 4];
                 return [4 /*yield*/, playYomiko(config.aamode.speakWord)];
             case 3:
                 _a.sent();
                 return [3 /*break*/, 6];
             case 4:
-                text = newList[newList.length - 1].text.replace(/<br> /g, '\n ').replace(/<br>/g, '\n ');
+                text = newList[lastIdx].text.replace(/<br.*?\/?>/g, '\n');
                 text = text.replace(/<img.*?\/>/g, '');
                 text = text.replace(/<a .*?>/g, '').replace(/<\/a>/g, '');
                 text = util_1.unescapeHtml(text);
                 if (globalThis.config.yomikoReplaceNewline) {
                     text = text.replace(/\r\n/g, ' ').replace(/\n/g, ' ');
+                }
+                // fromを読み上げる
+                if (newList[lastIdx].from === 'twitch') {
+                    text = 'twitchからカキコ\n' + text;
+                }
+                // レス番号を読み上げる
+                if (config.yomikoReadResNumber && newList[lastIdx].number) {
+                    text = "\u30EC\u30B9" + newList[lastIdx].number + "\n" + text;
                 }
                 return [4 /*yield*/, playYomiko(text)];
             case 5:
